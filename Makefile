@@ -20,13 +20,13 @@ clean:
 
 fclean: clean
 	$(MAKE) fclean -C libft
-	rm -f $(NAME)
+	rm -f $(NAME) woody
 
 re: fclean all
 
 all: $(NAME)
 
-add: fclean
+add: test fclean
 	git add .gitignore $(SRC) Makefile $(INC) README.md 
 
 commit: add
@@ -34,3 +34,10 @@ commit: add
 
 push: commit
 	git push origin main
+
+test: $(NAME)
+	./$(NAME) $(NAME)
+
+
+norm:
+	norminette src/*.c
