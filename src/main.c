@@ -14,7 +14,7 @@ static	int	read_file(const char *s)
 	fd = open(s, O_RDONLY, 0);
 	if (fd < 0)
 		strerr("file could not be read");
-	woodyfd = open("woody", O_CREAT | O_APPEND | O_TRUNC, 755);
+	woodyfd = open("woody", O_CREAT | O_APPEND | O_TRUNC, 0755);
 	close(woodyfd);
 	close(fd);
 	return (0);
