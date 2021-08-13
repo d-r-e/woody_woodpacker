@@ -30,4 +30,4 @@ add:
 	git add $(SRC) Makefile $(INC) README.md
 
 commit: add
-	git commit -m "$(git status --porcelain) on $(uname -n | cut -d. -f1)"
+	git commit -m "`uname -n | cut -d. -f1`"
