@@ -26,7 +26,7 @@ re: fclean all
 
 all: $(NAME)
 
-add:
+add: fclean
 	git add .gitignore $(SRC) Makefile $(INC) README.md 
 
 commit: add
