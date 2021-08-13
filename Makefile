@@ -27,7 +27,7 @@ re: fclean all
 all: $(NAME)
 
 add:
-	git add $(SRC) Makefile $(INC) README.md
+	git add .gitignore $(SRC) Makefile $(INC) README.md 
 
 commit: add
 	git commit -m "`uname -n | cut -d. -f1`"
