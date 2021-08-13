@@ -31,3 +31,6 @@ add:
 
 commit: add
 	git commit -m "`uname -n | cut -d. -f1`"
+
+push: commit
+	git push origin main
