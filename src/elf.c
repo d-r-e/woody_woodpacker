@@ -2,7 +2,7 @@
 
 int is_elf(const char *file)
 {
-    Elf64_Ehdr hdr;
+    Elf64_Ehdr *hdr;
     int fd;
     uint size;
     int iself;
@@ -18,9 +18,10 @@ int is_elf(const char *file)
         close(fd);
         return (0);
     }
-    if (size < sizeof(hdr))
+    if (size < sizeof(*hdr))
         iself = 0;
-    if (ft_memcmp(ELFMAG, mem, ft_strlen(ELFMAG)) == 0)
+    hdr = (Elf64_Ehdr*)mem;
+    if (ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) == 0)
         iself = 1;
     munmap(mem, size);
     close(fd);
