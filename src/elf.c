@@ -24,9 +24,7 @@ int is_elf(const char *file)
     if (size >= sizeof(*hdr) &&
             !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
             hdr->e_ident[EI_CLASS] == ELFCLASS64)
-    {
         iself = 1;
-    }    
     #ifdef DEBUG
      printf("binary file size: %d bytes\n", size);
      printf("e_type: %d\n", hdr->e_type);

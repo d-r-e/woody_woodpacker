@@ -2,7 +2,7 @@
 # define WOODY_H
 # include <stdlib.h>
 # include <stdio.h>
-# include <linux/elf.h>
+# include <elf.h>
 # include <fcntl.h>
 # include <sys/types.h>
 # include <unistd.h>
