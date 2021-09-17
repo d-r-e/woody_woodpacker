@@ -9,7 +9,7 @@
 # include <sys/mman.h>
 # include "../libft/libft.h"
 # define BIN "woody_woodpacker"
-
+# define DEBUG 1
 void strerr(const char *s);
 int is_elf(const char *file);
 #endif
