@@ -10,6 +10,16 @@
 # include "../libft/libft.h"
 # define BIN "woody_woodpacker"
 # define DEBUG 1
+
+typedef struct s_elf
+{
+    size_t      size;
+    char        *mem;
+    Elf64_Ehdr  hdr;
+}   t_elf;
+
+
 void strerr(const char *s);
 int is_elf(const char *file);
+
 #endif
