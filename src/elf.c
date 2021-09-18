@@ -13,9 +13,9 @@ static int write_header(Elf64_Ehdr *header)
         return (-1);
     }
     write(woodyfd, header, sizeof(*header));
-    #ifdef DEBUG
-        printf("Woody header written.\n");
-    #endif
+#ifdef DEBUG
+    printf("Woody header written.\n");
+#endif
     close(woodyfd);
     return (0);
 }
@@ -35,20 +35,20 @@ static int print_elf_header(void)
 {
     Elf64_Phdr *phdr;
 
-    printf("__________________________________________\n");
+    printf("------------------------------------------\n");
     printf("e_phoff: %lu\n", g_elf.hdr.e_phoff);
     printf("e_shoff: %lu\n", g_elf.hdr.e_shoff);
     printf("e_phentsize: %u\n", g_elf.hdr.e_phentsize);
     printf("e_ehsize: %u\n", g_elf.hdr.e_ehsize);
     printf("e_phnum: %u\n", g_elf.hdr.e_phnum);
-    printf("__________________________________________\n");
+    printf("------------------------------------------\n");
     for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
     {
-
         phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
-#ifdef DEBUG 
-        //if (phdr->p_type == 0x01)
-            print_program_header(*phdr);
+        if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
+            strerr("wrong file format");
+#ifdef DEBUG
+        print_program_header(*phdr);
 #endif
     }
     return (0);
@@ -69,7 +69,7 @@ int is_elf(const char *file)
     if (fd < 0)
         return (0);
     g_elf.size = lseek(fd, 0, SEEK_END);
-    
+
     g_elf.mem = mmap(NULL, g_elf.size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (g_elf.mem == MAP_FAILED)
     {
@@ -77,13 +77,13 @@ int is_elf(const char *file)
         close(fd);
         return (0);
     }
-    hdr = (Elf64_Ehdr*)g_elf.mem;
+    hdr = (Elf64_Ehdr *)g_elf.mem;
     hdr = malloc(sizeof(Elf64_Ehdr));
     ft_memcpy(hdr, g_elf.mem, sizeof(Elf64_Ehdr));
     ft_memcpy(&g_elf.hdr, hdr, sizeof(*hdr));
     if (g_elf.size >= sizeof(*hdr) &&
-            !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
-            hdr->e_ident[EI_CLASS] == ELFCLASS64)
+        !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
+        hdr->e_ident[EI_CLASS] == ELFCLASS64)
     {
         iself = 1;
         if (!write_header(hdr))
@@ -92,10 +92,10 @@ int is_elf(const char *file)
             parse_elf();
         }
     }
-    #ifdef DEBUG
-     printf("binary file g_elf.size: %ld bytes\n", g_elf.size);
-     printf("e_ident[EI_CLASS]: %d\n", hdr->e_ident[EI_CLASS]);
-    #endif
+#ifdef DEBUG
+    printf("binary file g_elf.size: %ld bytes\n", g_elf.size);
+    printf("e_ident[EI_CLASS]: %d\n", hdr->e_ident[EI_CLASS]);
+#endif
     munmap(g_elf.mem, g_elf.size);
     close(fd);
     free(hdr);
