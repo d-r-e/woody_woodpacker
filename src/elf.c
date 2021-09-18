@@ -22,11 +22,13 @@ static int write_header(Elf64_Ehdr *header)
 
 void print_program_header(Elf64_Phdr phdr)
 {
-    printf("p_type:\t%u|\t", phdr.p_type);
-    printf("p_flags:\t%x|\t", phdr.p_flags);
-    printf("p_offset:\t%lu|\t", phdr.p_offset);
-    printf("p_paddr:\t%lu|\t", phdr.p_paddr);
-    printf("p_filesz:\t%lu|\n", phdr.p_filesz);
+    if (phdr.p_type > 10)
+        printf("p_type:  0x%x|\t", phdr.p_type);
+    else
+        printf("p_type:\t%11u|\t", phdr.p_type);
+    printf("p_offset:\t%7lu|\t", phdr.p_offset);
+    printf("p_paddr:\t%7lu|\t", phdr.p_paddr);
+    printf("p_filesz:\t%7lu|\n", phdr.p_filesz);
 }
 
 static int print_elf_header(void)
