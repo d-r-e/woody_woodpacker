@@ -62,7 +62,7 @@ static void copy_program_headers(void)
 
     g_elf.woodyfd = open("woody", O_RDWR | O_APPEND, 755);
 
-    for (int i = 1; i < g_elf.hdr.e_phnum; ++i)
+    for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
     {
         phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
