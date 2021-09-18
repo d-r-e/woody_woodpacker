@@ -48,9 +48,9 @@ static int copy_elf_header(void)
             strerr("wrong file format");
 #ifdef DEBUG
         //print_program_header(*phdr);
-        printf("copying header %p -> %p size %ld %d\n", phdr, phdr + sizeof(*phdr), sizeof(*phdr), 0x78-0x40);
+        printf("copying header %p -> %p size %ld %d\n", phdr, phdr + g_elf.hdr.e_phentsize, sizeof(*phdr), g_elf.hdr.e_phentsize);
 #endif
-        write(g_elf.woodyfd, phdr, sizeof(*phdr));
+        write(g_elf.woodyfd, phdr, g_elf.hdr.e_phentsize);
     }
     close(g_elf.woodyfd);
     return (0);
@@ -62,12 +62,12 @@ static void copy_program_headers(void)
 
     g_elf.woodyfd = open("woody", O_RDWR | O_APPEND, 755);
 
-    for (int i = 1; i <= g_elf.hdr.e_phnum; ++i)
+    for (int i = 1; i < g_elf.hdr.e_phnum; ++i)
     {
         phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
-        printf("copying section %p -> %p\n", (g_elf.mem + phdr->p_offset), (g_elf.mem + phdr->p_offset + phdr->p_filesz));
+        printf("copying section %p -> %p size %lu\n", (g_elf.mem + phdr->p_offset), (g_elf.mem + phdr->p_offset + phdr->p_filesz), phdr->p_filesz);
         write(g_elf.woodyfd, g_elf.mem + phdr->p_offset, phdr->p_filesz);
     }
     close(g_elf.woodyfd);
