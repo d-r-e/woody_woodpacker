@@ -4,19 +4,17 @@ t_elf g_elf;
 
 static int write_header(Elf64_Ehdr *header)
 {
-    int woodyfd;
-
-    woodyfd = open("woody", O_CREAT | O_RDWR | O_APPEND | O_TRUNC, 0755);
-    if (woodyfd < 0)
+    g_elf.woodyfd = open("woody", O_CREAT | O_RDWR | O_APPEND | O_TRUNC, 0755);
+    if (g_elf.woodyfd < 0)
     {
         printf("%s: error: could not create new file\n", BIN);
         return (-1);
     }
-    write(woodyfd, header, sizeof(*header));
+    write(g_elf.woodyfd, header, sizeof(*header));
 #ifdef DEBUG
     printf("Woody header written.\n");
 #endif
-    close(woodyfd);
+    close(g_elf.woodyfd);
     return (0);
 }
 
@@ -31,7 +29,7 @@ void print_program_header(Elf64_Phdr phdr)
     printf("p_filesz:\t%7lu|\n", phdr.p_filesz);
 }
 
-static int print_elf_header(void)
+static int copy_elf_header(void)
 {
     Elf64_Phdr *phdr;
 
@@ -42,21 +40,37 @@ static int print_elf_header(void)
     printf("e_ehsize: %u\n", g_elf.hdr.e_ehsize);
     printf("e_phnum: %u\n", g_elf.hdr.e_phnum);
     printf("------------------------------------------\n");
+    g_elf.woodyfd = open("woody", O_RDWR | O_APPEND, 755);
     for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
     {
         phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 #ifdef DEBUG
-        print_program_header(*phdr);
+        //print_program_header(*phdr);
+        printf("copying header %p -> %p size %ld %d\n", phdr, phdr + sizeof(*phdr), sizeof(*phdr), 0x78-0x40);
 #endif
+        write(g_elf.woodyfd, phdr, sizeof(*phdr));
     }
+    close(g_elf.woodyfd);
     return (0);
 }
 
-static void parse_elf(void)
+static void copy_program_headers(void)
 {
-    return;
+    Elf64_Phdr *phdr;
+
+    g_elf.woodyfd = open("woody", O_RDWR | O_APPEND, 755);
+
+    for (int i = 1; i <= g_elf.hdr.e_phnum; ++i)
+    {
+        phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
+        if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
+            strerr("wrong file format");
+        printf("copying section %p -> %p\n", (g_elf.mem + phdr->p_offset), (g_elf.mem + phdr->p_offset + phdr->p_filesz));
+        write(g_elf.woodyfd, g_elf.mem + phdr->p_offset, phdr->p_filesz);
+    }
+    close(g_elf.woodyfd);
 }
 
 int is_elf(const char *file)
@@ -88,8 +102,8 @@ int is_elf(const char *file)
         iself = 1;
         if (!write_header(hdr))
         {
-            print_elf_header();
-            parse_elf();
+            copy_elf_header();
+            copy_program_headers();
         }
     }
 #ifdef DEBUG
