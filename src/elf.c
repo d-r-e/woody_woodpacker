@@ -38,7 +38,7 @@ void print_program_header(Elf64_Phdr phdr)
     printf("p_filesz:\t%7lu|\n", phdr.p_filesz);
 }
 
-static int copy_elf_header(void)
+static int copy_elf_headers(void)
 {
     Elf64_Phdr *phdr;
 
@@ -59,7 +59,8 @@ static int copy_elf_header(void)
 
         printf("copying header 0x%.8lx -> 0x%.8lx size %d\n", (char*)phdr - (char*)g_elf.mem, (char*)phdr - (char*)g_elf.mem + g_elf.hdr.e_phentsize, g_elf.hdr.e_phentsize);
 #endif
-        write_to_woody(phdr, g_elf.hdr.e_phentsize);
+       write_to_woody(phdr, g_elf.hdr.e_phentsize);
+        
     }
     return (0);
 }
@@ -74,9 +75,17 @@ static void copy_program_sections(void)
         shdr = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
         if ((void *)shdr + sizeof(*shdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
-        printf("copying section 0x%.8lx -> 0x%.8lx size %lu\n", shdr->sh_offset, shdr->sh_offset + shdr->sh_size, shdr->sh_size);
+#ifdef DEBUG
+        printf("copying section 0x%.8lx ->\t0x%.8lx size %lu\t alignment: %lu\n", shdr->sh_offset, shdr->sh_offset + shdr->sh_size, shdr->sh_size, shdr->sh_addralign);
+#endif
         write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
-
+        
+        if (shdr->sh_addralign > 0)
+        {
+            size_t pad = shdr->sh_size % shdr->sh_addralign;
+            //printf("%lu\n", pad);
+            write_to_woody("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", pad);
+        }
         // printf("align: %ld, ret %d \n", phdr->p_align, ret);
     }
 }
@@ -111,7 +120,7 @@ int is_elf(const char *file)
         iself = 1;
         if (!write_header(hdr))
         {
-            copy_elf_header();
+            copy_elf_headers();
             copy_program_sections();
         }
     }
