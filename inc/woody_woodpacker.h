@@ -17,6 +17,7 @@ typedef struct s_elf
     char        *mem;
     Elf64_Ehdr  hdr;
     int         woodyfd;
+    size_t      woodysz;
 }   t_elf;
 
 

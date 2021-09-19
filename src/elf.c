@@ -2,19 +2,28 @@
 
 t_elf g_elf;
 
-static int write_header(Elf64_Ehdr *header)
+static int write_to_woody(void *mem, size_t size)
 {
-    g_elf.woodyfd = open("woody", O_CREAT | O_RDWR | O_APPEND | O_TRUNC, 0755);
+    g_elf.woodyfd = open("woody", O_CREAT | O_RDWR | O_APPEND, 0755);
     if (g_elf.woodyfd < 0)
     {
-        printf("%s: error: could not create new file\n", BIN);
-        return (-1);
+        printf("read error: open\n");
+        return (0);
     }
-    write(g_elf.woodyfd, header, sizeof(*header));
+    size_t written = write(g_elf.woodyfd, mem, size);
+    g_elf.woodysz += written;
+    if (written < size)
+        printf("written %ld, intended %lu\n", written, size);
+    close(g_elf.woodyfd);
+    return (written);
+}
+
+static int write_header(Elf64_Ehdr *header)
+{
+    write_to_woody(header, sizeof(*header));
 #ifdef DEBUG
     printf("Woody header written.\n");
 #endif
-    close(g_elf.woodyfd);
     return (0);
 }
 
@@ -40,37 +49,36 @@ static int copy_elf_header(void)
     printf("e_ehsize: %u\n", g_elf.hdr.e_ehsize);
     printf("e_phnum: %u\n", g_elf.hdr.e_phnum);
     printf("------------------------------------------\n");
-    g_elf.woodyfd = open("woody", O_RDWR | O_APPEND, 755);
     for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
     {
-        phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
+        phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 #ifdef DEBUG
         //print_program_header(*phdr);
-        printf("copying header %p -> %p size %ld %d\n", phdr, phdr + g_elf.hdr.e_phentsize, sizeof(*phdr), g_elf.hdr.e_phentsize);
+
+        printf("copying header 0x%.8lx -> 0x%.8lx size %d\n", (char*)phdr - (char*)g_elf.mem, (char*)phdr - (char*)g_elf.mem + g_elf.hdr.e_phentsize, g_elf.hdr.e_phentsize);
 #endif
-        write(g_elf.woodyfd, phdr, g_elf.hdr.e_phentsize);
+        write_to_woody(phdr, g_elf.hdr.e_phentsize);
     }
-    close(g_elf.woodyfd);
     return (0);
 }
 
-static void copy_program_headers(void)
+static void copy_program_sections(void)
 {
-    Elf64_Phdr *phdr;
+    Elf64_Shdr *shdr;
 
-    g_elf.woodyfd = open("woody", O_RDWR | O_APPEND, 755);
 
-    for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
+    for (int i = 0;  i < g_elf.hdr.e_shnum; ++i)
     {
-        phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * sizeof(Elf64_Phdr));
-        if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
+        shdr = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
+        if ((void *)shdr + sizeof(*shdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
-        printf("copying section %p -> %p size %lu\n", (g_elf.mem + phdr->p_offset), (g_elf.mem + phdr->p_offset + phdr->p_filesz), phdr->p_filesz);
-        write(g_elf.woodyfd, g_elf.mem + phdr->p_offset, phdr->p_filesz);
+        printf("copying section 0x%.8lx -> 0x%.8lx size %lu\n", shdr->sh_offset, shdr->sh_offset + shdr->sh_size, shdr->sh_size);
+        write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
+
+        // printf("align: %ld, ret %d \n", phdr->p_align, ret);
     }
-    close(g_elf.woodyfd);
 }
 
 int is_elf(const char *file)
@@ -79,6 +87,7 @@ int is_elf(const char *file)
     int fd;
     int iself = 0;
 
+    ft_bzero(&g_elf, sizeof(g_elf));
     fd = open(file, O_RDONLY);
     if (fd < 0)
         return (0);
@@ -103,12 +112,12 @@ int is_elf(const char *file)
         if (!write_header(hdr))
         {
             copy_elf_header();
-            copy_program_headers();
+            copy_program_sections();
         }
     }
 #ifdef DEBUG
-    printf("binary file g_elf.size: %ld bytes\n", g_elf.size);
-    printf("e_ident[EI_CLASS]: %d\n", hdr->e_ident[EI_CLASS]);
+    // printf("binary file g_elf.size: %ld bytes\n", g_elf.size);
+    // printf("e_ident[EI_CLASS]: %d\n", hdr->e_ident[EI_CLASS]);
 #endif
     munmap(g_elf.mem, g_elf.size);
     close(fd);
