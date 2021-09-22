@@ -141,6 +141,13 @@ static void copy_program_sections(void)
     }
 }
 
+static void update_size(Elf64_Ehdr *hdr)
+{
+    ft_bzero(&hdr->e_shoff, sizeof(hdr->e_shoff));
+    ft_bzero(&hdr->e_shnum, sizeof(hdr->e_shnum));
+    
+}
+
 int is_elf(const char *file)
 {
     Elf64_Ehdr *hdr;
@@ -164,6 +171,7 @@ int is_elf(const char *file)
     hdr = malloc(sizeof(Elf64_Ehdr));
     ft_memcpy(hdr, g_elf.mem, sizeof(Elf64_Ehdr));
     ft_memcpy(&g_elf.hdr, hdr, sizeof(*hdr));
+
     if (g_elf.size >= sizeof(*hdr) &&
         !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
         hdr->e_ident[EI_CLASS] == ELFCLASS64)
@@ -174,7 +182,7 @@ int is_elf(const char *file)
         {
             copy_elf_headers();
             copy_program_sections();
-            
+            update_size(hdr);
         }
         close(g_elf.woodyfd);
     }
