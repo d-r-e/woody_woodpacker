@@ -84,13 +84,11 @@ static int copy_elf_headers(void)
 static void copy_program_sections(void)
 {
     Elf64_Shdr *shdr;
-    Elf64_Phdr *phdr;
     int pad = 0;
 
     for (int i = 0; i < g_elf.hdr.e_shnum; ++i)
     {
         shdr = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
-        phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
         if ((void *)shdr + sizeof(*shdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 #ifdef DEBUG
@@ -99,11 +97,6 @@ static void copy_program_sections(void)
         
         
         pad = 0;
-        (void)phdr;
-        // while (shdr->sh_addralign && (g_elf.woodysz + pad) % shdr->sh_addralign)
-        // {
-        //     pad++;
-        // }
         if (g_elf.woodysz < shdr->sh_offset)
         pad = (shdr->sh_offset - g_elf.woodysz);
         printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
