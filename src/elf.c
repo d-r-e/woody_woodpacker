@@ -4,7 +4,6 @@ t_elf g_elf;
 
 static int write_to_woody(void *mem, size_t size)
 {
-    
     if (g_elf.woodyfd < 0)
     {
         printf("read error: open\n");
@@ -145,7 +144,6 @@ static void update_size(Elf64_Ehdr *hdr)
 {
     ft_bzero(&hdr->e_shoff, sizeof(hdr->e_shoff));
     ft_bzero(&hdr->e_shnum, sizeof(hdr->e_shnum));
-    
 }
 
 int is_elf(const char *file)
