@@ -9,7 +9,7 @@
 # include <sys/mman.h>
 # include "../libft/libft.h"
 # define BIN "woody_woodpacker"
-# define DEBUG 1
+//# define DEBUG 1
 
 typedef struct s_elf
 {
@@ -18,6 +18,7 @@ typedef struct s_elf
     Elf64_Ehdr  hdr;
     int         woodyfd;
     size_t      woodysz;
+    char        *strtab;
 }   t_elf;
 
 
