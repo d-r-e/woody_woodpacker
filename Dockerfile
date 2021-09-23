@@ -3,7 +3,7 @@ LABEL maintainer darodrig
 RUN apt update && apt upgrade -y
 RUN apt install -y make gcc git vim man gdb file valgrind lsof zsh
 RUN apt install -y curl
-RUN apt install -y binwalkbi
+RUN apt install -y binwalk
 RUN apt install -y python3 pip poppler-utils
 RUN pip install norminette
 RUN apt install -y nasm
