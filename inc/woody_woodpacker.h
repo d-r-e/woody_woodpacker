@@ -10,7 +10,7 @@
 # include "../libft/libft.h"
 # define BIN "woody_woodpacker"
 # define DEBUG 1
-
+# define MAX_BUFF_SIZE 40
 typedef struct s_elf
 {
     size_t      size;
@@ -25,7 +25,7 @@ typedef struct s_elf
 void            strerr(const char *s);
 int             is_elf(const char *file);
 const char      *get_section_name(int index);
-
+void find_caves(Elf64_Shdr shdr, char c);
 extern t_elf g_elf;
 
 #endif

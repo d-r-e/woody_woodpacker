@@ -1,5 +1,5 @@
 NAME=woody_woodpacker
-SRC=src/main.c src/string.c src/elf.c
+SRC=src/main.c src/string.c src/elf.c src/injection.c
 OBJ = $(SRC:.c=.o)
 FLAGS= -O2 -Wall -Wextra -Werror -Wformat-security
 LIBFT=libft/libft.a

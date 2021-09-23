@@ -19,10 +19,11 @@ static int write_to_woody(void *mem, size_t size)
 static int pad_to_woody(size_t size)
 {
     size_t written = 0;
+    size_t len = MAX_BUFF_SIZE;
 
-    while (size > 20 && written / 20 < size / 20)
+    while (size > len && written / len < size / len)
     {
-        written += write(g_elf.woodyfd, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", 20);
+        written += write(g_elf.woodyfd, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", len);
     }
     for (size_t i = written; i < size; ++i)
         written += write(g_elf.woodyfd, "\0", 1);
@@ -72,10 +73,10 @@ static int copy_elf_headers(void)
             strerr("wrong file format");
 #ifdef DEBUG
         printf("copying header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
-                (char *)phdr - (char *)g_elf.mem,
-                (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
-                g_elf.hdr.e_phentsize,
-                phdr->p_type);
+               (char *)phdr - (char *)g_elf.mem,
+               (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
+               g_elf.hdr.e_phentsize,
+               phdr->p_type);
 #endif
         write_to_woody(phdr, g_elf.hdr.e_phentsize);
     }
@@ -119,13 +120,20 @@ static void copy_program_sections(void)
         pad = 0;
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
+        if (!ft_strncmp(".text", get_section_name(shdr->sh_name), 6))
+        {
 #ifdef DEBUG
-        printf("copying section %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
-                i,
-                get_section_name(shdr->sh_name),
-                shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
-                shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
-                pad);
+            printf(".text section found. Size: %lu\n", shdr->sh_size);
+#endif
+            find_caves(*shdr, '\0');
+        }
+#ifdef DEBUG
+        printf("sect %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
+               i,
+               get_section_name(shdr->sh_name),
+               shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
+               shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
+               pad);
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
