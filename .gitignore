@@ -3,7 +3,7 @@ woody
 *.pdf
 # Prerequisites
 *.d
-
+*.png
 # Object files
 *.o
 *.ko

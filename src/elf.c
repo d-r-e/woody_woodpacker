@@ -71,10 +71,11 @@ static int copy_elf_headers(void)
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 #ifdef DEBUG
-        printf("copying header 0x%.8lx -> 0x%.8lx size %d\n",
+        printf("copying header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
                 (char *)phdr - (char *)g_elf.mem,
                 (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
-                g_elf.hdr.e_phentsize);
+                g_elf.hdr.e_phentsize,
+                phdr->p_type);
 #endif
         write_to_woody(phdr, g_elf.hdr.e_phentsize);
     }
@@ -84,28 +85,12 @@ static int copy_elf_headers(void)
 const char *get_section_name(int index)
 {
     char *ptr;
-    int i;
 
     if (index < 0 || g_elf.strtab == NULL)
         return ("");
     if (g_elf.strtab + index > g_elf.mem + g_elf.size)
         return ("");
     ptr = g_elf.strtab + index;
-    return (ptr);
-    i = 0;
-    while (i != index)
-    {
-        if (ptr > g_elf.mem + g_elf.size)
-            return ("out");
-        while (*ptr)
-        {
-            ptr++;
-            if (ptr > g_elf.mem + g_elf.size)
-                return ("");
-        }
-        ptr++;
-        i++;
-    }
     return (ptr);
 }
 
@@ -135,7 +120,12 @@ static void copy_program_sections(void)
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
 #ifdef DEBUG
-        printf("copying section %-18s: %d 0x%.8lx -> 0x%.8lx size %lu  type : %d \t alignment: %lu\n",get_section_name(shdr->sh_name), i, shdr->sh_offset, shdr->sh_offset + shdr->sh_size, shdr->sh_size, shdr->sh_type, shdr->sh_addralign);
+        printf("copying section %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
+                i,
+                get_section_name(shdr->sh_name),
+                shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
+                shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
+                pad);
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
