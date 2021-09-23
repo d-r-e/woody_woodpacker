@@ -9,7 +9,7 @@
 # include <sys/mman.h>
 # include "../libft/libft.h"
 # define BIN "woody_woodpacker"
-//# define DEBUG 1
+# define DEBUG 1
 
 typedef struct s_elf
 {
@@ -22,7 +22,10 @@ typedef struct s_elf
 }   t_elf;
 
 
-void strerr(const char *s);
-int is_elf(const char *file);
+void            strerr(const char *s);
+int             is_elf(const char *file);
+const char      *get_section_name(int index);
+
+extern t_elf g_elf;
 
 #endif
