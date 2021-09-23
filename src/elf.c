@@ -125,9 +125,9 @@ static void copy_program_sections(void)
 #ifdef DEBUG
             printf(".text section found. Size: %lu\n", shdr->sh_size);
 #endif
-            find_caves(*shdr, '\0');
         }
 #ifdef DEBUG
+            find_caves(*shdr, '\0', 100);
         printf("sect %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
                i,
                get_section_name(shdr->sh_name),

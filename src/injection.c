@@ -1,6 +1,6 @@
 #include "../inc/woody_woodpacker.h"
 
-void find_caves(Elf64_Shdr shdr, char c)
+void find_caves(Elf64_Shdr shdr, char c, size_t min)
 {
     char *ptr;
     unsigned long max = 0;
@@ -19,7 +19,8 @@ void find_caves(Elf64_Shdr shdr, char c)
         if (j >= max)
             max = j;
     }
-    printf("max cave found for character %d: %lu\n", c, max);
+    if (max >= min)
+        printf("max cave found for character %d: %lu\n", c, max);
 
 
 }

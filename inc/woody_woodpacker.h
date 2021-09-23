@@ -25,7 +25,7 @@ typedef struct s_elf
 void            strerr(const char *s);
 int             is_elf(const char *file);
 const char      *get_section_name(int index);
-void find_caves(Elf64_Shdr shdr, char c);
+void find_caves(Elf64_Shdr shdr, char c, size_t min);
 extern t_elf g_elf;
 
 #endif
