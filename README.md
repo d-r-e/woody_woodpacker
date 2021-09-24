@@ -8,3 +8,4 @@
 
 
 readelf -S bin
+```binwalk -W bin1 bin2```
