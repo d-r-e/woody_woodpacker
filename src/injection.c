@@ -21,6 +21,4 @@ void find_caves(Elf64_Shdr shdr, char c, size_t min)
     }
     if (max >= min)
         printf("max cave in %s found for character %d: %lu bytes\n", get_section_name(shdr.sh_name), c, max);
-
-
 }

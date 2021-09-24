@@ -27,7 +27,7 @@ re: fclean all
 all: $(NAME)
 
 add: test fclean
-	git add .gitignore $(SRC) Makefile $(INC) README.md 
+	git add .gitignore $(SRC) Makefile $(INC) README.md Dockerfile
 
 commit: add
 	git commit -m "`uname -n | cut -d. -f1`"
@@ -38,6 +38,9 @@ push: commit
 test: $(NAME)
 	./$(NAME) $(NAME)
 
+x: $(NAME)
+	@rm -f woody
+	./woody_woodpacker resources/sample
 
 norm:
 	norminette src/*.c
