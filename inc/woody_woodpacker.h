@@ -26,6 +26,8 @@ void            strerr(const char *s);
 int             is_elf(const char *file);
 const char      *get_section_name(int index);
 void find_caves(Elf64_Shdr shdr, char c, size_t min);
+char ft_rand_bit(void);
+
 extern t_elf g_elf;
 
 #endif

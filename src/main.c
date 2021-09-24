@@ -10,6 +10,14 @@ int	main(int argc, char *argv[])
 {
 	int	ret;
 
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
+	printf("c: %d\n", ft_rand_bit());
 	ret = 0;
 	if (argc != 2)
 		usage();
