@@ -56,7 +56,6 @@ static int write_header(Elf64_Ehdr *header)
 static int copy_elf_headers(void)
 {
     Elf64_Phdr *phdr;
-
 #ifdef DEBUG
     printf("------------------------------------------\n");
     printf("e_phoff: %lu\n", g_elf.hdr.e_phoff);
@@ -64,6 +63,7 @@ static int copy_elf_headers(void)
     printf("e_phentsize: %u\n", g_elf.hdr.e_phentsize);
     printf("e_ehsize: %u\n", g_elf.hdr.e_ehsize);
     printf("e_phnum: %u\n", g_elf.hdr.e_phnum);
+    printf("e_entry: 0x%08lx\n", g_elf.hdr.e_entry);
     printf("------------------------------------------\n");
 #endif
     for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
@@ -127,13 +127,16 @@ static void copy_program_sections(void)
 #endif
         }
 #ifdef DEBUG
-        //find_caves(*shdr, '\0', 100);
-        printf("sect %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
+        if (shdr->sh_type == PT_LOAD)
+        {
+            find_caves(*shdr, '\0', 100);
+            printf("sect %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
                i,
                get_section_name(shdr->sh_name),
                shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
                shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
                pad);
+        }
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);

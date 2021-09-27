@@ -40,7 +40,7 @@ test: $(NAME)
 
 x: $(NAME)
 	@rm -f woody
-	./woody_woodpacker resources/sample
+	./woody_woodpacker resources/sample2
 
 norm:
 	norminette src/*.c

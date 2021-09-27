@@ -10,14 +10,6 @@ int	main(int argc, char *argv[])
 {
 	int	ret;
 
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
-	printf("c: %d\n", ft_rand_bit());
 	ret = 0;
 	if (argc != 2)
 		usage();
@@ -26,5 +18,7 @@ int	main(int argc, char *argv[])
 		printf("File architecture not suported. x86_64 only\n");
 		exit(-1);
 	}
+	g_elf.key = generate_key();
+	printf("GENERATED KEY \"%s\"\n", g_elf.key);
 	exit(ret);
 }

@@ -11,6 +11,7 @@
 # define BIN "woody_woodpacker"
 # define DEBUG 1
 # define MAX_BUFF_SIZE 40
+# define PASS_LENGTH 16
 typedef struct s_elf
 {
     size_t      size;
@@ -19,6 +20,7 @@ typedef struct s_elf
     int         woodyfd;
     size_t      woodysz;
     char        *strtab;
+    char        *key;
 }   t_elf;
 
 
@@ -26,8 +28,8 @@ void            strerr(const char *s);
 int             is_elf(const char *file);
 const char      *get_section_name(int index);
 void find_caves(Elf64_Shdr shdr, char c, size_t min);
-char ft_rand_bit(void);
-
+int     ft_rand(void);
+char* generate_key();
 extern t_elf g_elf;
 
 #endif

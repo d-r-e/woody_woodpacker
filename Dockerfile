@@ -8,6 +8,8 @@ RUN apt install -y python3 pip poppler-utils
 RUN git clone https://github.com/radareorg/radare2 && radare2/sys/install.sh
 RUN pip install norminette
 RUN apt install -y nasm
+RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
+RUN chmod 755 msfinstall && ./msfinstall
 RUN sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 RUN chsh root -s /bin/zsh
 CMD /bin/zsh
