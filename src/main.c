@@ -6,6 +6,7 @@ static void	usage(void)
 	exit(-1);
 }
 
+
 int	main(int argc, char *argv[])
 {
 	int	ret;
@@ -19,6 +20,7 @@ int	main(int argc, char *argv[])
 		exit(-1);
 	}
 	g_elf.key = generate_key();
-	printf("GENERATED KEY \"%s\"\n", g_elf.key);
+	printf("GENERATED KEY \"%s\", len: %lu\n", g_elf.key, ft_strlen(g_elf.key));
+	free(g_elf.key);
 	exit(ret);
 }

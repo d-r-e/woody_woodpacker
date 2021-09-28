@@ -46,7 +46,7 @@ void write_payload()
     Elf64_Addr offset;
     Elf64_Addr woody;
 
-    offset = g_elf.cave_offset + 1;
+    offset = g_elf.cave_offset;
     woody = offset + 40;
     g_elf.woodyfd = open("woody", O_RDWR);
     lseek(g_elf.woodyfd, offset, SEEK_SET);
