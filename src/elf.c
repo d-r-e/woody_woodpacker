@@ -130,7 +130,7 @@ static void copy_program_sections(void)
         if (shdr->sh_type == PT_LOAD)
         {
             find_caves(*shdr, '\0', 100);
-            printf("sect %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
+            printf("PT_LOAD %3d %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %10d  alignment: %3lu pad: %4d\n",
                i,
                get_section_name(shdr->sh_name),
                shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
@@ -189,7 +189,7 @@ int is_elf(const char *file)
         g_elf.woodyfd = open("woody", O_CREAT | O_APPEND | O_RDWR | O_TRUNC, 0755);
         if (g_elf.woodyfd < 0)
         {
-            printf("%s: error: packed file could not be created.\n", BIN);
+            printf("%s: error: packed file could not be created or another program is using it.\n", BIN);
         }
         else
         {
