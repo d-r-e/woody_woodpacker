@@ -162,6 +162,7 @@ static void update_size(Elf64_Ehdr *hdr)
 {
     ft_bzero(&hdr->e_shoff, sizeof(hdr->e_shoff));
     ft_bzero(&hdr->e_shnum, sizeof(hdr->e_shnum));
+    //ft_memset(&hdr->e_entry, 42, sizeof(hdr->e_entry));
 }
 
 int is_elf(const char *file)
@@ -213,7 +214,7 @@ int is_elf(const char *file)
             }
         }
         close(g_elf.woodyfd);
-        //write_payload();
+        write_payload();
     }
 #ifdef DEBUG
     // printf("binary file g_elf.size: %ld bytes\n", g_elf.size);

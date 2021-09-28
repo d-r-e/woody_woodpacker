@@ -56,11 +56,19 @@ void find_caves(Elf64_Shdr shdr, char c, size_t min)
 
 void write_payload()
 {
-    char c = 42;
+    Elf64_Addr offset;
+    Elf64_Addr woody;
+
+    offset = g_elf.cave_offset + 1;
+    woody = offset + 40;
     g_elf.woodyfd = open("woody", O_RDWR);
-    lseek(g_elf.woodyfd, g_elf.cave_offset, SEEK_SET);
+    lseek(g_elf.woodyfd, offset, SEEK_SET);
+    ft_memcpy((void*)&payload + 16, &woody, sizeof(offset));
+    //write(1, payload + 38, 15);
     for (int i = 0; i < 53; ++i)
-        write(g_elf.woodyfd, &c, 1);
-    printf("file infected from offset %u\n", g_elf.cave_offset);
+        write(g_elf.woodyfd, &payload[i], 1);
+    printf("file infected from offset %lu: %08lx. woody offset: %08lx\n", offset, offset, woody);
+    lseek(g_elf.woodyfd, 0x18, SEEK_SET);
+    write(g_elf.woodyfd, &offset, sizeof(offset));
     close(g_elf.woodyfd);
 }

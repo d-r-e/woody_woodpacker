@@ -22,7 +22,7 @@ typedef struct s_elf
     size_t      woodysz;
     char        *strtab;
     char        *key;
-    uint        cave_offset;
+    Elf64_Addr  cave_offset;
 }   t_elf;
 
 
