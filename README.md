@@ -6,6 +6,8 @@
 
 [Elfcrypt](https://web.archive.org/web/20170501112909/http://www.pinkstyle.org/elfcrypt.html)
 
+[Some curiosities](http://phrack.org/issues/61/8.html#article)
+
 ```readelf -S bin```
 
 ```binwalk -W bin1 bin2```
