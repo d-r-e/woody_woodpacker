@@ -1,5 +1,12 @@
 #include "../inc/woody_woodpacker.h"
 
+int is_infected(void)
+{
+    if (g_elf.hdr.e_shnum == 0)
+        return (1);
+    return (0);
+}
+
 void find_caves(Elf64_Shdr shdr, char c, size_t min)
 {
     char *ptr;

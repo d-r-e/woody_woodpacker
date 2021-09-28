@@ -27,9 +27,12 @@ typedef struct s_elf
 void            strerr(const char *s);
 int             is_elf(const char *file);
 const char      *get_section_name(int index);
-void find_caves(Elf64_Shdr shdr, char c, size_t min);
+void    find_caves(Elf64_Shdr shdr, char c, size_t min);
 int     ft_rand(void);
-char* generate_key();
+char    *generate_key();
+int     is_infected(void);
+
+
 extern t_elf g_elf;
 
 #endif

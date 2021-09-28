@@ -176,8 +176,12 @@ int is_elf(const char *file)
     hdr = malloc(sizeof(Elf64_Ehdr));
     ft_memcpy(hdr, g_elf.mem, sizeof(Elf64_Ehdr));
     ft_memcpy(&g_elf.hdr, hdr, sizeof(*hdr));
-
-    if (g_elf.size >= sizeof(*hdr) &&
+    if (is_infected())
+    {
+        printf("%s: error: this binary has already been infected.\n", BIN);
+        iself = 1;
+    }
+    else if (g_elf.size >= sizeof(*hdr) &&
         !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
         hdr->e_ident[EI_CLASS] == ELFCLASS64)
     {
@@ -187,12 +191,15 @@ int is_elf(const char *file)
         {
             printf("%s: error: packed file could not be created.\n", BIN);
         }
-        else if (!write_header(hdr))
+        else
         {
-            copy_elf_headers();
-            find_strtab();
-            copy_program_sections();
             update_size(hdr);
+            if (!write_header(hdr))
+            {
+                copy_elf_headers();
+                find_strtab();
+                copy_program_sections();
+            }
         }
         close(g_elf.woodyfd);
     }
