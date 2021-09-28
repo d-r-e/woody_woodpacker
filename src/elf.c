@@ -69,6 +69,8 @@ static int copy_elf_headers(void)
     for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
     {
         phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
+        if (!g_elf.baseimage && phdr->p_type == PT_LOAD)
+            g_elf.baseimage = phdr->p_vaddr;
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 // #ifdef DEBUG
@@ -125,6 +127,7 @@ static void copy_program_sections(void)
 #ifdef DEBUG
             printf(".text section found. Size: %lu\n", shdr->sh_size);
 #endif
+;
         }
 #ifdef DEBUG
         if (shdr->sh_type == PT_LOAD)
