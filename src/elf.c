@@ -23,7 +23,7 @@ static int pad_to_woody(size_t size)
 
     while (size > len && written / len < size / len)
     {
-        written += write(g_elf.woodyfd, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", len);
+        written += write(g_elf.woodyfd, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", len);
     }
     for (size_t i = written; i < size; ++i)
         written += write(g_elf.woodyfd, "\0", 1);
@@ -71,13 +71,13 @@ static int copy_elf_headers(void)
         phdr = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
-#ifdef DEBUG
-        printf("copying header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
-               (char *)phdr - (char *)g_elf.mem,
-               (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
-               g_elf.hdr.e_phentsize,
-               phdr->p_type);
-#endif
+// #ifdef DEBUG
+//         printf("copying header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
+//                (char *)phdr - (char *)g_elf.mem,
+//                (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
+//                g_elf.hdr.e_phentsize,
+//                phdr->p_type);
+// #endif
         write_to_woody(phdr, g_elf.hdr.e_phentsize);
     }
     return (0);
@@ -129,7 +129,7 @@ static void copy_program_sections(void)
 #ifdef DEBUG
         if (shdr->sh_type == PT_LOAD)
         {
-            find_caves(*shdr, '\0', 100);
+            find_caves(*shdr, '\0', CAVE_SIZE);
             printf("PT_LOAD [%3d] %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %d  alignment: %3lu pad: %4d\n",
                i,
                get_section_name(shdr->sh_name),
@@ -137,16 +137,17 @@ static void copy_program_sections(void)
                shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
                pad);
         }
-        else if (shdr->sh_type == PT_NOTE)
-        {
-            find_caves(*shdr, '\0', 100);
-            printf("PT_NOTE [%3d] %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %d  alignment: %3lu pad: %4d\n",
-               i,
-               get_section_name(shdr->sh_name),
-               shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
-               shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
-               pad);
-        }
+        // else if (shdr->sh_type == PT_NOTE)
+        // {
+        //     find_caves(*shdr, '\0', CAVE_SIZE);
+        //     printf("PT_NOTE [%3d] %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %d  alignment: %3lu pad: %4d\n",
+        //        i,
+        //        get_section_name(shdr->sh_name),
+        //        shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
+        //        shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
+        //        pad);
+        // }
+        
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
@@ -212,6 +213,7 @@ int is_elf(const char *file)
             }
         }
         close(g_elf.woodyfd);
+        //write_payload();
     }
 #ifdef DEBUG
     // printf("binary file g_elf.size: %ld bytes\n", g_elf.size);

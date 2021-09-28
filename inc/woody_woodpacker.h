@@ -12,6 +12,7 @@
 # define DEBUG 1
 # define MAX_BUFF_SIZE 40
 # define PASS_LENGTH 16
+# define CAVE_SIZE 53
 typedef struct s_elf
 {
     size_t      size;
@@ -21,6 +22,7 @@ typedef struct s_elf
     size_t      woodysz;
     char        *strtab;
     char        *key;
+    uint        cave_offset;
 }   t_elf;
 
 
@@ -31,6 +33,7 @@ void    find_caves(Elf64_Shdr shdr, char c, size_t min);
 int     ft_rand(void);
 char    *generate_key();
 int     is_infected(void);
+void write_payload();
 
 
 extern t_elf g_elf;

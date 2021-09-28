@@ -41,6 +41,9 @@ test: $(NAME)
 x: $(NAME)
 	@rm -f woody
 	./woody_woodpacker resources/sample2
+s: $(NAME)
+	@rm -f woody
+	./woody_woodpacker woody_woodpacker
 
 norm:
 	norminette src/*.c
