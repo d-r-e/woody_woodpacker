@@ -7,6 +7,7 @@ int ft_rand(void)
     int *n;
     static long m;
 
+    (void)payload;
     rnd = open("/dev/random/", O_RDONLY);
     read(rnd, mem, 32);
     n = (void*)mem;

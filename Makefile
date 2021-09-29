@@ -1,7 +1,7 @@
 NAME=woody_woodpacker
 SRC=src/main.c src/string.c src/elf.c src/injection.c src/random.c
 OBJ = $(SRC:.c=.o)
-FLAGS= -O2 -Wall -Wextra -Werror -Wformat-security
+FLAGS= -g -Wall -Wextra -Werror -Wformat-security -fno-stack-protector
 LIBFT=libft/libft.a
 INC=inc/$(NAME).h
 
@@ -46,7 +46,7 @@ s: $(NAME)
 	./woody_woodpacker woody_woodpacker
 
 diff: s
-	binwalk -W woody_woodpacker woody -o 0x3250 | less
+	binwalk -W woody_woodpacker woody| less
 
 norm:
 	norminette src/*.c
