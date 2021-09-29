@@ -36,11 +36,9 @@ static int pad_to_woody(size_t size)
 
 static int write_header(Elf64_Ehdr *header)
 {
-    Elf64_Ehdr hdr;
-
-    ft_memcpy(&hdr, header, sizeof(hdr));
-
-    write_to_woody(&hdr, sizeof(hdr));
+    ft_memcpy(&g_elf.hdr, header, sizeof(g_elf.hdr));
+    print_elf_header(g_elf.hdr);
+    write_to_woody(&g_elf.hdr, sizeof(g_elf.hdr));
 #ifdef DEBUG
     printf("Woody header written.\n");
 #endif
@@ -184,7 +182,7 @@ static void copy_program_sections(void)
         }
         if (i == g_elf.hdr.e_shnum - 1)
         {   
-            pad = g_elf.hdr.e_shoff - g_elf.woodysz + 64; 
+            pad = g_elf.hdr.e_shoff - g_elf.woodysz; 
             printf("header: 0x%lx pad: %d\n", shdr->sh_offset, pad);
             pad_to_woody(pad);
         }
@@ -222,22 +220,22 @@ void copy_program_headers()
         {
             shdr->sh_offset += sizeof(*shdr);
         }
-        write_to_woody(shdr, shdr->sh_size);
+        write_to_woody(shdr, sizeof(*shdr));
         prev = (Elf64_Shdr*)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
         free(shdr);
         (void)prev;
-        // if (!ft_strcmp(get_section_name(prev->sh_name), ".bss"))
-        // {
-        //     shdr = malloc(sizeof *shdr);
-        //     ft_bzero(shdr, sizeof(*shdr));
-        //     shdr->sh_name = prev->sh_name;
-        //     shdr->sh_size = sizeof(*shdr);
-        //     shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1 )* sizeof(*shdr);
-        //     shdr->sh_flags = 4;
-        //     write_to_woody(shdr, sizeof(*shdr));
-        //     free(shdr);
-        //     written = 1;
-        // }
+        if (!ft_strcmp(get_section_name(prev->sh_name), ".bss"))
+        {
+            shdr = malloc(sizeof *shdr);
+            ft_bzero(shdr, sizeof(*shdr));
+            shdr->sh_name = prev->sh_name;
+            shdr->sh_size = sizeof(*shdr);
+            shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1 )* sizeof(*shdr);
+            shdr->sh_flags = 4;
+            write_to_woody(shdr, sizeof(*shdr));
+            free(shdr);
+            written = 1;
+        }
     }
 }
 
@@ -293,7 +291,7 @@ int is_elf(const char *file)
             }
         }
         close(g_elf.woodyfd);
-        //write_payload();
+        write_payload();
         // if (g_elf.cave_offset)
         //     write_payload();
         // else

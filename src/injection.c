@@ -30,12 +30,9 @@ void write_payload()
     lseek(g_elf.woodyfd, 0, SEEK_SET);
     print_elf_header(g_elf.hdr);
     g_elf.hdr.e_entry = offset;
-    g_elf.hdr.e_shoff += sizeof(payload);
-    g_elf.hdr.e_shnum++;
-    g_elf.hdr.e_shstrndx += sizeof(payload);
     print_elf_header(g_elf.hdr);
 
-    write(g_elf.woodyfd, (void*)&g_elf.hdr, sizeof(g_elf.hdr));
+    //write(g_elf.woodyfd, (void*)&g_elf.hdr, sizeof(g_elf.hdr));
     //write(g_elf.woodyfd, &g_elf.hdr.e_entry, sizeof(offset));
     close(g_elf.woodyfd);
 }
