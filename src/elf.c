@@ -216,22 +216,26 @@ void copy_program_headers()
     {
         shdr = malloc(sizeof(*shdr));
         ft_memcpy(shdr, g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr), sizeof(*shdr));
+        if (!ft_strcmp(get_section_name(shdr->sh_name), ".shstrtab"))
+            printf(".shstrtab offset: %lx\n", shdr->sh_offset);
         if (written)
         {
             shdr->sh_offset += sizeof(*shdr);
         }
+        if (!ft_strcmp(get_section_name(shdr->sh_name), ".shstrtab"))
+            printf(".shstrtab offset: %lx\n", shdr->sh_offset);
         write_to_woody(shdr, sizeof(*shdr));
         prev = (Elf64_Shdr*)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
         free(shdr);
         (void)prev;
         if (!ft_strcmp(get_section_name(prev->sh_name), ".bss"))
         {
-            shdr = malloc(sizeof *shdr);
-            ft_bzero(shdr, sizeof(*shdr));
-            shdr->sh_name = prev->sh_name;
-            shdr->sh_size = sizeof(*shdr);
-            shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1 )* sizeof(*shdr);
-            shdr->sh_flags = 4;
+            shdr = ft_calloc(1, sizeof *shdr);
+        //     shdr->sh_name = prev->sh_name;
+        //     shdr->sh_size = sizeof(payload);
+        //     shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1 )* sizeof(*shdr);
+        //     shdr->sh_flags = SHF_EXECINSTR & SHF_ALLOC;
+        //     shdr->sh_type = 69;
             write_to_woody(shdr, sizeof(*shdr));
             free(shdr);
             written = 1;
@@ -291,7 +295,7 @@ int is_elf(const char *file)
             }
         }
         close(g_elf.woodyfd);
-        write_payload();
+        //write_payload();
         // if (g_elf.cave_offset)
         //     write_payload();
         // else

@@ -29,10 +29,12 @@ void write_payload()
     printf("file infected from offset %lu: 0x%08lx\n", offset, offset);
     lseek(g_elf.woodyfd, 0, SEEK_SET);
     print_elf_header(g_elf.hdr);
-    g_elf.hdr.e_entry = offset;
+    // g_elf.hdr.e_shoff;
+    g_elf.hdr.e_shnum++;
+    g_elf.hdr.e_shstrndx += sizeof(Elf64_Shdr);
     print_elf_header(g_elf.hdr);
 
-    //write(g_elf.woodyfd, (void*)&g_elf.hdr, sizeof(g_elf.hdr));
+    write(g_elf.woodyfd, (void*)&g_elf.hdr, sizeof(g_elf.hdr));
     //write(g_elf.woodyfd, &g_elf.hdr.e_entry, sizeof(offset));
     close(g_elf.woodyfd);
 }
@@ -40,7 +42,7 @@ void write_payload()
 void write_woody_section(Elf64_Shdr *shdr)
 {
     (void)shdr;
-    g_elf.woody_offset = g_elf.woodysz;
+    //g_elf.woody_offset = g_elf.woodysz;
     //write_to_woody(payload, sizeof(payload));
     return;
 }
