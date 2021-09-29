@@ -14,6 +14,7 @@
 #define PASS_LENGTH 16
 #define WOODY_LEN 16
 #define CAVE_SIZE 56
+#define COPY_HEADERS 1
 typedef struct s_elf
 {
     size_t size;

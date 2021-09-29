@@ -73,13 +73,13 @@ static int copy_elf_headers(void)
             g_elf.baseimage = phdr->p_vaddr;
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
-// #ifdef DEBUG
-//         printf("copying header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
-//                (char *)phdr - (char *)g_elf.mem,
-//                (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
-//                g_elf.hdr.e_phentsize,
-//                phdr->p_type);
-// #endif
+        // #ifdef DEBUG
+        //         printf("copying header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
+        //                (char *)phdr - (char *)g_elf.mem,
+        //                (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
+        //                g_elf.hdr.e_phentsize,
+        //                phdr->p_type);
+        // #endif
         write_to_woody(phdr, g_elf.hdr.e_phentsize);
     }
     return (0);
@@ -127,18 +127,18 @@ static void copy_program_sections(void)
 #ifdef DEBUG
             printf(".text section found. Size: %lu\n", shdr->sh_size);
 #endif
-;
+            ;
         }
 #ifdef DEBUG
         if (shdr->sh_type == PT_LOAD)
         {
             find_caves(*shdr, '\0', CAVE_SIZE);
-            printf("PT_LOAD [%3d] %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %d  alignment: %3lu pad: %4d\n",
-               i,
-               get_section_name(shdr->sh_name),
-               shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
-               shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
-               pad);
+            printf("[%3d] %-20s %lx-%lx size %7lu  type : %d  alignment: %3lu pad: %4d\n",
+                   i,
+                   get_section_name(shdr->sh_name),
+                   shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
+                   shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
+                   pad);
         }
         // else if (shdr->sh_type == PT_NOTE)
         // {
@@ -150,7 +150,7 @@ static void copy_program_sections(void)
         //        shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
         //        pad);
         // }
-        
+
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
@@ -159,12 +159,19 @@ static void copy_program_sections(void)
 
         // printf("align: %ld, ret %d \n", phdr->p_align, ret);
     }
+
+#ifdef COPY_HEADERS
+    write_to_woody(g_elf.mem + g_elf.woodysz, g_elf.size - g_elf.woodysz);
+#endif
 }
 
 static void update_size(Elf64_Ehdr *hdr)
 {
+    (void)hdr;
+#ifndef COPY_HEADERS
     ft_bzero(&hdr->e_shoff, sizeof(hdr->e_shoff));
     ft_bzero(&hdr->e_shnum, sizeof(hdr->e_shnum));
+#endif
     //ft_memset(&hdr->e_entry, 42, sizeof(hdr->e_entry));
 }
 
@@ -179,7 +186,6 @@ int is_elf(const char *file)
     if (fd < 0)
         return (0);
     g_elf.size = lseek(fd, 0, SEEK_END);
-
     g_elf.mem = mmap(NULL, g_elf.size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (g_elf.mem == MAP_FAILED)
     {
@@ -197,8 +203,8 @@ int is_elf(const char *file)
         iself = 1;
     }
     else if (g_elf.size >= sizeof(*hdr) &&
-        !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
-        hdr->e_ident[EI_CLASS] == ELFCLASS64)
+             !ft_memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
+             hdr->e_ident[EI_CLASS] == ELFCLASS64)
     {
         iself = 1;
         g_elf.woodyfd = open("woody", O_CREAT | O_APPEND | O_RDWR | O_TRUNC, 0755);

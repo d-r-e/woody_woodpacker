@@ -45,6 +45,8 @@ s: $(NAME)
 	@rm -f woody
 	./woody_woodpacker woody_woodpacker
 
+diff: s
+	binwalk -W woody_woodpacker woody -o 0x3250 | less
 
 norm:
 	norminette src/*.c
