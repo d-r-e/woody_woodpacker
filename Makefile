@@ -45,8 +45,9 @@ s: $(NAME)
 	@rm -f woody
 	./woody_woodpacker woody_woodpacker
 
-diff: s
-	binwalk -W woody_woodpacker woody| less
+diff: $(NAME)
+	rm -f woody
+	./diff.sh
 
 norm:
 	norminette src/*.c

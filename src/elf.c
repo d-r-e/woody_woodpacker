@@ -89,6 +89,7 @@ static int copy_elf_headers(void)
         {
             printf("modifying program header for last pt_load\n");
             phdr->p_filesz = phdr->p_memsz + sizeof(payload);
+            phdr->p_flags = phdr->p_flags + SHF_EXECINSTR;
         }
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
@@ -149,7 +150,7 @@ static void copy_program_sections(void)
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
         
-        if (!ft_strncmp(".text", get_section_name(shdr->sh_name), 6))
+        if (!ft_strcmp(".text", get_section_name(shdr->sh_name)))
         {
 #ifdef DEBUG
             printf(".text section found. Size: %lu\n", shdr->sh_size);
@@ -183,7 +184,7 @@ static void copy_program_sections(void)
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
-        if (!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
+        if (!ft_strcmp(get_section_name(prev->sh_name), ".text") && written == 0)
         {
             printf(".bss has passed\n");
             write_woody_section(shdr);
@@ -191,7 +192,7 @@ static void copy_program_sections(void)
         }
         if (shdr->sh_type != SHT_NOBITS)
             write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
-        else
+        else if (shdr->sh_type == SHT_NOBITS)
         {
             ;//pad_to_woody(shdr->sh_size);
             //write_woody_section(shdr);
@@ -304,7 +305,7 @@ int is_elf(const char *file)
                 copy_program_sections();
                 puts("sections written");
 #ifdef COPY_HEADERS
-                //copy_program_headers();
+                copy_program_headers();
                 // write_to_woody(g_elf.mem + g_elf.woodysz, g_elf.size - g_elf.woodysz);
 #endif
             }

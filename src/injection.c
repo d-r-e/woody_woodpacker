@@ -20,15 +20,16 @@ void write_payload()
     Elf64_Addr offset;
     // Elf64_Addr woody;
 
-    offset = g_elf.woody_offset;
+    offset = g_elf.woody_offset + 1;
     //woody = offset + 38;
     g_elf.woodyfd = open("woody", O_RDWR);
     //ft_memcpy((void*)&payload + WOODY_LEN, &woody, sizeof(woody));
-    printf("file infected from offset %lu: 0x%08lx\n", offset, offset);
+    printf("file infected from offset %lu:0x%08lx\n", offset, offset);
     lseek(g_elf.woodyfd, 0, SEEK_SET);
-#ifdef DEBUG
-    print_elf_header(g_elf.hdr);
-#endif
+// #ifdef DEBUG
+//     print_elf_header(g_elf.hdr);
+// #endif
+    // g_elf.hdr.e_entry = offset;
     g_elf.hdr.e_shoff += sizeof(payload);
     g_elf.hdr.e_shnum++;
     g_elf.hdr.e_shstrndx += sizeof(Elf64_Shdr) + sizeof(payload);
@@ -46,7 +47,7 @@ void write_woody_section(Elf64_Shdr *shdr)
     g_elf.woody_offset = g_elf.woodysz;
     write_to_woody(payload, sizeof(payload));
 #ifdef DEBUG
-    printf("%s: payload written\n", BIN);
+    printf("%s: payload written at 0x%lx\n", BIN, g_elf.woody_offset);
 #endif
     return;
 }
