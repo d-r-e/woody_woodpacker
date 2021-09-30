@@ -12,10 +12,8 @@ int is_infected(void)
     return (0);
 }
 
-
-    // if (!infected)
-    //     ft_memcpy()
-
+// if (!infected)
+//     ft_memcpy()
 
 void write_payload()
 {
@@ -28,13 +26,16 @@ void write_payload()
     //ft_memcpy((void*)&payload + WOODY_LEN, &woody, sizeof(woody));
     printf("file infected from offset %lu: 0x%08lx\n", offset, offset);
     lseek(g_elf.woodyfd, 0, SEEK_SET);
+#ifdef DEBUG
     print_elf_header(g_elf.hdr);
-    // g_elf.hdr.e_shoff;
+#endif
+    g_elf.hdr.e_shoff += sizeof(payload);
     g_elf.hdr.e_shnum++;
-    g_elf.hdr.e_shstrndx += sizeof(Elf64_Shdr);
+    g_elf.hdr.e_shstrndx += sizeof(Elf64_Shdr) + sizeof(payload);
+#ifdef DEBUG
     print_elf_header(g_elf.hdr);
-
-    write(g_elf.woodyfd, (void*)&g_elf.hdr, sizeof(g_elf.hdr));
+#endif
+    write(g_elf.woodyfd, (void *)&g_elf.hdr, sizeof(g_elf.hdr));
     //write(g_elf.woodyfd, &g_elf.hdr.e_entry, sizeof(offset));
     close(g_elf.woodyfd);
 }
@@ -42,7 +43,10 @@ void write_payload()
 void write_woody_section(Elf64_Shdr *shdr)
 {
     (void)shdr;
-    //g_elf.woody_offset = g_elf.woodysz;
-    //write_to_woody(payload, sizeof(payload));
+    g_elf.woody_offset = g_elf.woodysz;
+    write_to_woody(payload, sizeof(payload));
+#ifdef DEBUG
+    printf("%s: payload written\n", BIN);
+#endif
     return;
 }
