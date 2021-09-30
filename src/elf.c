@@ -101,7 +101,7 @@ static int copy_elf_headers(void)
                phdr->p_type);
 #endif
         write_to_woody(phdr, g_elf.hdr.e_phentsize);
-        prev = (Elf64_Phdr*)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
+        prev = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
         free(phdr);
     }
     return (0);
@@ -138,7 +138,6 @@ static void copy_program_sections(void)
     int pad = 0;
     int written = 0;
 
-
     for (int i = 0; i < g_elf.hdr.e_shnum; ++i)
     {
         shdr = malloc(sizeof(*shdr));
@@ -148,7 +147,6 @@ static void copy_program_sections(void)
         pad = 0;
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
-        
         if (!ft_strcmp(".text", get_section_name(shdr->sh_name)))
         {
 #ifdef DEBUG
@@ -183,7 +181,7 @@ static void copy_program_sections(void)
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
-        if (prev && !ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
+        if (prev && prev->sh_type == PT_LOAD && shdr->sh_type != PT_LOAD) //!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
         {
             printf(".bss has passed\n");
             write_woody_section(shdr);
@@ -193,14 +191,15 @@ static void copy_program_sections(void)
             write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
         else if (shdr->sh_type == SHT_NOBITS)
         {
-            ;//pad_to_woody(shdr->sh_size);
+            pad_to_woody(shdr->sh_size);
             //write_woody_section(shdr);
         }
-        if (i == g_elf.hdr.e_shnum - 1)
-        {   
-            pad = g_elf.hdr.e_shoff - g_elf.woodysz + sizeof(payload); 
+        if (i == g_elf.hdr.e_shnum - 1 && written == 0)
+        {
+            pad = g_elf.hdr.e_shoff - g_elf.woodysz + sizeof(payload);
             printf("header: 0x%lx pad: %d\n", shdr->sh_offset, pad);
-            pad_to_woody(pad);
+            if (pad > 0)
+                pad_to_woody(pad);
         }
         prev = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
         free(shdr);
@@ -239,7 +238,7 @@ void copy_program_headers()
         if (!ft_strcmp(get_section_name(shdr->sh_name), ".shstrtab"))
             printf(".shstrtab offset: %lx\n", shdr->sh_offset);
         write_to_woody(shdr, sizeof(*shdr));
-        prev = (Elf64_Shdr*)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
+        prev = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
         free(shdr);
         (void)prev;
         if (!ft_strcmp(get_section_name(prev->sh_name), ".bss"))
@@ -247,7 +246,7 @@ void copy_program_headers()
             shdr = ft_calloc(1, sizeof *shdr);
             shdr->sh_name = prev->sh_name;
             shdr->sh_size = sizeof(payload);
-            shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1 )* sizeof(*shdr);
+            shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1) * sizeof(*shdr);
             shdr->sh_flags = SHF_EXECINSTR & SHF_ALLOC;
             shdr->sh_type = 69;
             write_to_woody(shdr, sizeof(*shdr));
