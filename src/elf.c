@@ -133,13 +133,12 @@ static void find_strtab(void)
 
 static void copy_program_sections(void)
 {
-    Elf64_Shdr *shdr;
-    Elf64_Shdr *prev;
+    Elf64_Shdr *shdr = NULL;
+    Elf64_Shdr *prev = NULL;
     int pad = 0;
     int written = 0;
 
-    (void)written;
-    (void)prev;
+
     for (int i = 0; i < g_elf.hdr.e_shnum; ++i)
     {
         shdr = malloc(sizeof(*shdr));
@@ -184,7 +183,7 @@ static void copy_program_sections(void)
         //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
         pad_to_woody(pad);
-        if (!ft_strcmp(get_section_name(prev->sh_name), ".text") && written == 0)
+        if (prev && !ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
         {
             printf(".bss has passed\n");
             write_woody_section(shdr);
@@ -207,6 +206,8 @@ static void copy_program_sections(void)
         free(shdr);
         // printf("align: %ld, ret %d \n", phdr->p_align, ret);
     }
+    if (written == 0)
+        printf("Mal asunto.\n");
 }
 
 static void update_size(Elf64_Ehdr *hdr)
@@ -299,11 +300,8 @@ int is_elf(const char *file)
             if (!write_header(hdr))
             {
                 copy_elf_headers();
-                puts("elfheaders written");
                 find_strtab();
-                puts("found strtab");
                 copy_program_sections();
-                puts("sections written");
 #ifdef COPY_HEADERS
                 copy_program_headers();
                 // write_to_woody(g_elf.mem + g_elf.woodysz, g_elf.size - g_elf.woodysz);
