@@ -1,6 +1,7 @@
-[BITS] 64
+
 segment .text
     global _woody
+	extern _start
 _woody:
 	pushfq
 	push rax
@@ -12,11 +13,19 @@ _woody:
 	push r8
 	push r9
 	push r10
-    mov rax, 1      ; syscall write
-    mov rdi, 1      ; fd 1
-    mov rsi, .wdy    ; buffer woody
-    mov rdx, 15     ; bytes 15
-    syscall
+	mov edi, 1
+	jmp woody
+back:
+	pop rsi
+	mov rdx, 15
+	mov rax, rdi
+	syscall
+	jmp finish
+woody:
+	call back
+	.string db "Hello world!!!", 10, 00
+
+finish:
 	pop r10
 	pop r9
 	pop r8
@@ -27,8 +36,5 @@ _woody:
 	pop rdi
 	pop rax
 	popfq
-    jmp 0x424242
-    .wdy db "....WOODY.....", 0xa, 0; 
-    ; xor rdi, rdi
-    ; mov rax, 60
-    ; syscall
+	jmp _start
+	ret
