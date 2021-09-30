@@ -44,10 +44,12 @@ x: $(NAME)
 s: $(NAME)
 	@rm -f woody
 	./woody_woodpacker woody_woodpacker
-
+h: $(NAME)
+	@rm -f woody
+	./$(NAME) asm/helloworld
 diff: $(NAME)
 	rm -f woody
-	./diff.sh
+	./diff.sh asm/helloworld
 
 norm:
 	norminette src/*.c
