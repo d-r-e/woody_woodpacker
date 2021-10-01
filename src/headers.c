@@ -4,6 +4,7 @@ int copy_program_headers(void)
 {
     Elf64_Phdr *phdr;
     Elf64_Phdr *prev;
+
 #ifdef DEBUG
     print_elf_header(g_elf.hdr);
 #endif
@@ -59,7 +60,7 @@ void copy_section_headers(void)
         write_to_woody(shdr, sizeof(*shdr));
         prev = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
         free(shdr);
-        if (!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
+        if (!ft_strcmp(get_section_name(prev->sh_name), ".text") && written == 0)
         {
             shdr = malloc(sizeof *shdr);
             shdr->sh_name = 0;

@@ -113,10 +113,10 @@ static void copy_program_sections(void)
         pad = 0;
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
-        if (!ft_strcmp(".text", get_section_name(shdr->sh_name)))
+        if (!ft_strcmp(SECTION, get_section_name(shdr->sh_name)))
         {
 #ifdef DEBUG
-            printf(".text section found. Size: %lu\n", shdr->sh_size);
+            printf("%s section found. Size: %lu\n", SECTION, shdr->sh_size);
 #endif
             ;
         }
@@ -126,27 +126,27 @@ static void copy_program_sections(void)
             // find_caves(*shdr, '\0', CAVE_SIZE);
             // if (g_elf.cave_offset)
             //     shdr->sh_flags = 6;
-            printf("[%3d] %-20s %lx-%lx size %7lu  type : %d flags: %lx alignment: %3lu pad: %4d\n",
+            printf("%3d| %-20s %04lx-%04lx sz: %7lu  type:%d flags:%lx algn: %3lu pad: %4d\n",
                    i,
                    get_section_name(shdr->sh_name),
                    shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
-                   shdr->sh_size, shdr->sh_type, shdr->sh_flags, shdr->sh_addralign,
+                   shdr->sh_size, shdr->sh_type < 10 ? shdr->sh_type : 0, shdr->sh_flags, shdr->sh_addralign,
                    pad);
         }
 #endif
-        // if ( written == 0 && (prev && prev->sh_type == PT_LOAD && shdr->sh_type != PT_LOAD)) //!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
-        // {
-        //     printf(".bss has passed\n");
-        //     write_woody_section(shdr);
-        //     written = 1;
-        // }
-        (void)prev;
-        if (i == g_elf.hdr.e_shnum - 1 && written == 0)
+        if (written == 0 && prev && !ft_strcmp(SECTION, get_section_name(shdr->sh_name))) //!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
         {
-            printf("last section appended\n");
+            printf("%s has passed\n", SECTION);
             write_woody_section(shdr);
             written = 1;
         }
+        (void)prev;
+        // if (i == g_elf.hdr.e_shnum - 1 && written == 0)
+        // {
+        //     printf("last section appended\n");
+        //     write_woody_section(shdr);
+        //     written = 1;
+        // }
         pad_to_woody(pad);
         if (shdr->sh_type != SHT_NOBITS)
             write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
@@ -176,7 +176,6 @@ static void update_size(Elf64_Ehdr *hdr)
 
     //ft_memset(&hdr->e_entry, 42, sizeof(hdr->e_entry));
 }
-
 
 int is_elf(const char *file)
 {
@@ -230,7 +229,9 @@ int is_elf(const char *file)
             }
         }
         close(g_elf.woodyfd);
+#ifdef MODIFY
         write_payload();
+#endif
         // if (g_elf.cave_offset)
         //     write_payload();
         // else

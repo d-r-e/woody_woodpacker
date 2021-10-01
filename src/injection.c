@@ -4,6 +4,7 @@
 // 		  "\x2f\x62\x69\x6e\x2f"
 // 		  "\x2f\x73\x68\x57\x54"
 // 		  "\x5f\xb0\x3b\x99\x0f\x05"};
+
 int is_infected(void)
 {
     (void)payload;
@@ -16,13 +17,14 @@ void write_payload()
 {
     Elf64_Addr offset;
 
-    offset = g_elf.woody_offset +1;
+    offset = g_elf.woody_offset + 1;
     g_elf.woodyfd = open("woody", O_RDWR);
     printf("file infected from offset %lu:0x%08lx\n", offset, offset);
 // #ifdef DEBUG
 //     print_elf_header(g_elf.hdr);
 // #endif
     // g_elf.hdr.e_entry = offset;
+
     g_elf.hdr.e_shoff += sizeof(payload);
     g_elf.hdr.e_shnum++;
 #ifdef DEBUG
