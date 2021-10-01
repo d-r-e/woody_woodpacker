@@ -6,6 +6,8 @@
 
 [Elfcrypt](https://web.archive.org/web/20170501112909/http://www.pinkstyle.org/elfcrypt.html)
 
+[Unix viruses](https://www.win.tue.nl/~aeb/linux/hh/virus/unix-viruses.txt)
+
 [Some curiosities](http://phrack.org/issues/61/8.html#article)
 
 ```readelf -S bin```
