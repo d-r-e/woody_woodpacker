@@ -41,15 +41,18 @@ test: $(NAME)
 x: $(NAME)
 	@rm -f woody
 	./woody_woodpacker resources/sample2
-	./woody
+	@echo
+	@./woody
 s: $(NAME)
 	@rm -f woody
-	./woody_woodpacker woody_woodpacker
-	./woody
+	@./woody_woodpacker woody_woodpacker
+	@echo
+	@./woody
 h: $(NAME)
 	@rm -f woody
 	./$(NAME) asm/helloworld
-	./woody
+	@echo
+	@./woody
 v: $(NAME)
 	./$(NAME) resources/sample2
 	valgrind ./woody

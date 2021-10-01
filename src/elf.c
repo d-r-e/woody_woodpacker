@@ -59,17 +59,16 @@ static int write_header(Elf64_Ehdr *header)
 void print_elf_header(Elf64_Ehdr hdr)
 {
     printf("------------------------------------------\n");
-    printf("e_phoff: %lu\n", hdr.e_phoff);
-    printf("e_entry: 0x%08lx\n", hdr.e_entry);
-    printf("e_shnum: %u\n", hdr.e_shnum);
-    printf("e_shoff: %lx\n", hdr.e_shoff);
-    printf("e_phoff: %lu\n", hdr.e_phoff);
-    printf("e_shoff: %lu\n", hdr.e_shoff);
-    printf("e_phentsize: %u\n", hdr.e_phentsize);
-    printf("e_ehsize: %u\n", hdr.e_ehsize);
-    printf("e_phnum: %u\n", hdr.e_phnum);
-    printf("e_entry: 0x%08lx\n", hdr.e_entry);
-    printf("e_shstrndx: 0x%08x\n", hdr.e_shstrndx);
+    printf("e_phoff: %-5lu\n", hdr.e_phoff);
+    printf("e_entry: 0x%-8lx\n", hdr.e_entry);
+    printf("e_shnum: %-5u\n", hdr.e_shnum);
+    printf("e_shoff: 0x%-5lx\n", hdr.e_shoff);
+    printf("e_phoff: 0x%-5lx\n", hdr.e_phoff);
+    printf("e_phentsize: %-5u\n", hdr.e_phentsize);
+    printf("e_ehsize: %-5u\n", hdr.e_ehsize);
+    printf("e_phnum: %-u\n", hdr.e_phnum);
+    printf("e_entry: 0x%-8lx\n", hdr.e_entry);
+    printf("e_shstrndx: 0x%-8x\n", hdr.e_shstrndx);
     printf("------------------------------------------\n");
 }
 
