@@ -13,7 +13,6 @@
 # define MAX_BUFF_SIZE 40
 # define PASS_LENGTH 16
 # define WOODY_LEN 16
-# define COPY_HEADERS
 
 typedef struct s_elf
 {
