@@ -15,4 +15,4 @@
 
 ```readelf -S bin```
 
-```binwalk -W bin1 bin2```
+```binwalk -W bin1 bin2 (-o 0x0ffset) | less```

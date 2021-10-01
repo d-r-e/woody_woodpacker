@@ -167,26 +167,21 @@ static void copy_program_sections(void)
                    shdr->sh_size, shdr->sh_type, shdr->sh_flags, shdr->sh_addralign,
                    pad);
         }
-        // else if (shdr->sh_type == PT_NOTE)
-        // {
-        //     find_caves(*shdr, '\0', CAVE_SIZE);
-        //     printf("PT_NOTE [%3d] %-20s 0x%.8lx -> 0x%.8lx size %7lu  type : %d  alignment: %3lu pad: %4d\n",
-        //        i,
-        //        get_section_name(shdr->sh_name),
-        //        shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
-        //        shdr->sh_size, shdr->sh_type, shdr->sh_addralign,
-        //        pad);
-        // }
-
-        //printf("size: %lu pad: %u sh_addralign %lu\n", shdr->sh_size, pad, shdr->sh_addralign);
 #endif
-        pad_to_woody(pad);
-        if (prev && prev->sh_type == PT_LOAD && shdr->sh_type != PT_LOAD) //!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
+        printf("i: %d written: %d\n", i, written);
+        if ( written == 0 && (prev && prev->sh_type == PT_LOAD && shdr->sh_type != PT_LOAD)) //!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
         {
             printf(".bss has passed\n");
             write_woody_section(shdr);
             written = 1;
         }
+        if (i == g_elf.hdr.e_shnum - 1 && written == 0)
+        {
+            printf("last section appended\n");
+            write_woody_section(shdr);
+            written = 1;
+        }
+        pad_to_woody(pad);
         if (shdr->sh_type != SHT_NOBITS)
             write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
         else if (shdr->sh_type == SHT_NOBITS)
@@ -206,7 +201,7 @@ static void copy_program_sections(void)
         // printf("align: %ld, ret %d \n", phdr->p_align, ret);
     }
     if (written == 0)
-        printf("Mal asunto.\n");
+        printf("Mal asunto!\n");
 }
 
 static void update_size(Elf64_Ehdr *hdr)

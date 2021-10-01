@@ -13,8 +13,8 @@
 # define MAX_BUFF_SIZE 40
 # define PASS_LENGTH 16
 # define WOODY_LEN 16
-# define CAVE_SIZE 46
 # define COPY_HEADERS
+
 typedef struct s_elf
 {
     size_t size;
@@ -26,7 +26,7 @@ typedef struct s_elf
     char *key;
     Elf64_Addr woody_offset;
     Elf64_Addr baseimage;
-    Elf64_Shdr  woodyshdr;
+    Elf64_Shdr woodyshdr;
 } t_elf;
 
 void strerr(const char *s);
@@ -42,7 +42,7 @@ int write_to_woody(void *mem, size_t size);
 void write_woody_section(Elf64_Shdr *shdr);
 
 static uint8_t payload[] = {
-'\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\x41','\x50','\x41','\x51','\x41','\x52','\xbf','\x01','\x00','\x00','\x00','\xeb','\x0d','\x5e','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xee','\xff','\xff','\xff','\x48','\x65','\x6c','\x6c','\x6f','\x20','\x77','\x6f','\x72','\x6c','\x64','\x21','\x21','\x21','\x0a','\x41','\x5a','\x41','\x59','\x41','\x58','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\xe9','\x00','\x00','\x00','\x00'
+    '\x9c', '\x50', '\x57', '\x56', '\x54', '\x52', '\x51', '\x41', '\x50', '\x41', '\x51', '\x41', '\x52', '\xbf', '\x01', '\x00', '\x00', '\x00', '\xeb', '\x0d', '\x5e', '\xba', '\x0f', '\x00', '\x00', '\x00', '\x48', '\x89', '\xf8', '\x0f', '\x05', '\xeb', '\x15', '\xe8', '\xee', '\xff', '\xff', '\xff', '\x48', '\x65', '\x6c', '\x6c', '\x6f', '\x20', '\x77', '\x6f', '\x72', '\x6c', '\x64', '\x21', '\x21', '\x21', '\x0a', '\x41', '\x5a', '\x41', '\x59', '\x41', '\x58', '\x59', '\x5a', '\x5c', '\x5e', '\x5f', '\x58', '\x9d', '\xe9', '\x00', '\x00', '\x00', '\x00'
 };
 // static uint8_t payload[] = {0x9c, 0x50, 0x57, 0x56, 0x54, 0x52, 0x51, 0x41, 0x50, 0x41,
 //   0x51, 0x41, 0x52, 0xbf, 0x01, 0x00, 0x00, 0x00, 0xe9, 0x1d,

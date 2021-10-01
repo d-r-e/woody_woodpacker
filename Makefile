@@ -41,12 +41,15 @@ test: $(NAME)
 x: $(NAME)
 	@rm -f woody
 	./woody_woodpacker resources/sample2
+	./woody
 s: $(NAME)
 	@rm -f woody
 	./woody_woodpacker woody_woodpacker
+	./woody
 h: $(NAME)
 	@rm -f woody
 	./$(NAME) asm/helloworld
+	./woody
 diff: $(NAME)
 	rm -f woody
 	./diff.sh asm/helloworld
