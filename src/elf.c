@@ -69,42 +69,8 @@ void print_elf_header(Elf64_Ehdr hdr)
     printf("e_ehsize: %u\n", hdr.e_ehsize);
     printf("e_phnum: %u\n", hdr.e_phnum);
     printf("e_entry: 0x%08lx\n", hdr.e_entry);
+    printf("e_shstrndx: 0x%08x\n", hdr.e_shstrndx);
     printf("------------------------------------------\n");
-}
-
-static int copy_elf_headers(void)
-{
-    Elf64_Phdr *phdr;
-    Elf64_Phdr *prev;
-#ifdef DEBUG
-    print_elf_header(g_elf.hdr);
-#endif
-    for (int i = 0; i < g_elf.hdr.e_phnum; ++i)
-    {
-        phdr = malloc(sizeof(*phdr));
-        ft_memcpy(phdr, g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize, sizeof(*phdr));
-        if (!g_elf.baseimage && phdr->p_type == PT_LOAD)
-            g_elf.baseimage = phdr->p_vaddr;
-        if (prev->p_type == PT_LOAD && phdr->p_type != PT_LOAD)
-        {
-            printf("modifying program header for last pt_load\n");
-            phdr->p_filesz = phdr->p_memsz + sizeof(payload);
-            phdr->p_flags = phdr->p_flags + SHF_EXECINSTR;
-        }
-        if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
-            strerr("wrong file format");
-#ifdef DEBUG
-        printf("copying segment header 0x%.8lx -> 0x%.8lx size %d type: %4d\n",
-               (char *)phdr - (char *)g_elf.mem,
-               (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
-               g_elf.hdr.e_phentsize,
-               phdr->p_type);
-#endif
-        write_to_woody(phdr, g_elf.hdr.e_phentsize);
-        prev = (Elf64_Phdr *)(g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize);
-        free(phdr);
-    }
-    return (0);
 }
 
 const char *get_section_name(int index)
@@ -211,42 +177,6 @@ static void update_size(Elf64_Ehdr *hdr)
     //ft_memset(&hdr->e_entry, 42, sizeof(hdr->e_entry));
 }
 
-void copy_program_headers()
-{
-    Elf64_Shdr *shdr;
-    Elf64_Shdr *prev;
-    int written = 0;
-
-    for (int i = 0; i < g_elf.hdr.e_shnum; ++i)
-    {
-        shdr = malloc(sizeof(*shdr));
-        ft_memcpy(shdr, g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr), sizeof(*shdr));
-        if (written)
-        {
-            shdr->sh_offset += sizeof(*shdr) + sizeof(payload);
-            
-        }
-        if (!ft_strcmp(get_section_name(shdr->sh_name), ".shstrtab"))
-            printf(".shstrtab offset: %lx\n", shdr->sh_offset);
-        write_to_woody(shdr, sizeof(*shdr));
-        prev = (Elf64_Shdr *)(g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr));
-        free(shdr);
-        if (!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
-        {
-            shdr = ft_calloc(1, sizeof *shdr);
-            shdr->sh_name = prev->sh_name;
-            shdr->sh_size = sizeof(payload);
-            shdr->sh_addralign = prev ? prev->sh_addralign: 4096;
-            shdr->sh_addr = g_elf.hdr.e_shoff + (i + 1) * sizeof(*shdr);
-            shdr->sh_flags = SHF_EXECINSTR & SHF_ALLOC;
-            shdr->sh_type = 69;
-            shdr->sh_entsize = sizeof(shdr);
-            write_to_woody(shdr, sizeof(*shdr));
-            free(shdr);
-            written = 1;
-        }
-    }
-}
 
 int is_elf(const char *file)
 {
@@ -290,11 +220,11 @@ int is_elf(const char *file)
             update_size(hdr);
             if (!write_header(hdr))
             {
-                copy_elf_headers();
+                copy_program_headers();
                 find_strtab();
                 copy_program_sections();
 #ifdef COPY_HEADERS
-                //copy_program_headers();
+                copy_section_headers();
                 // write_to_woody(g_elf.mem + g_elf.woodysz, g_elf.size - g_elf.woodysz);
 #endif
             }

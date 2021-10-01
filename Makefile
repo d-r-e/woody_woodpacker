@@ -1,7 +1,7 @@
 NAME=woody_woodpacker
-SRC=src/main.c src/string.c src/elf.c src/injection.c src/random.c
+SRC=src/main.c src/string.c src/elf.c src/injection.c src/random.c src/headers.c
 OBJ = $(SRC:.c=.o)
-FLAGS= -g -Wall -Wextra -Werror -Wformat-security -fno-stack-protector
+FLAGS= -Wall -Wextra -Werror -Wformat-security -fno-stack-protector
 LIBFT=libft/libft.a
 INC=inc/$(NAME).h
 
@@ -50,6 +50,9 @@ h: $(NAME)
 	@rm -f woody
 	./$(NAME) asm/helloworld
 	./woody
+v: $(NAME)
+	./$(NAME) resources/sample2
+	valgrind ./woody
 diff: $(NAME)
 	rm -f woody
 	./diff.sh asm/helloworld

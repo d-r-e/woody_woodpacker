@@ -16,7 +16,7 @@ void write_payload()
 {
     Elf64_Addr offset;
 
-    offset = g_elf.woody_offset + 1;
+    offset = g_elf.woody_offset +1;
     g_elf.woodyfd = open("woody", O_RDWR);
     printf("file infected from offset %lu:0x%08lx\n", offset, offset);
 // #ifdef DEBUG
@@ -25,13 +25,12 @@ void write_payload()
     // g_elf.hdr.e_entry = offset;
     g_elf.hdr.e_shoff += sizeof(payload);
     g_elf.hdr.e_shnum++;
-    g_elf.hdr.e_shstrndx += sizeof(Elf64_Shdr) + sizeof(payload);
 #ifdef DEBUG
     print_elf_header(g_elf.hdr);
 #endif
 #ifndef COPY_HEADERS
-    ft_bzero(&g_elf.hdr.e_shoff, sizeof(g_elf.hdr.e_shoff));
-    ft_bzero(&g_elf.hdr.e_shnum, sizeof(g_elf.hdr.e_shnum));
+    g_elf.hdr.e_shoff = 0;
+    g_elf.hdr.e_shnum = 0;
 #endif
     lseek(g_elf.woodyfd, 0, SEEK_SET);
     write(g_elf.woodyfd, (void *)&g_elf.hdr, sizeof(g_elf.hdr));
