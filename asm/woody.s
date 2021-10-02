@@ -23,7 +23,7 @@ back:
 	jmp finish
 woody:
 	call back
-	.string db "Hello world!!!", 10, 00
+	.string db "....WOODY.....", 10, 00
 
 finish:
 	pop r10

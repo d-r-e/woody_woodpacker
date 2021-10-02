@@ -13,7 +13,7 @@
 # define MAX_BUFF_SIZE 40
 # define PASS_LENGTH 16
 # define WOODY_LEN 16
-# define MODIFY
+
 # define COPY_HEADERS
 # define SECTION ".bss"
 
