@@ -59,6 +59,9 @@ v: $(NAME)
 diff: $(NAME)
 	@rm -f woody
 	./diff.sh asm/h*
+difff: $(NAME)
+	@rm -f woody
+	./diff.sh resources/sample2
 
 norm:
 	norminette src/*.c

@@ -16,7 +16,7 @@ int write_to_woody(void *mem, size_t size)
     return (written);
 }
 
-static int pad_to_woody(size_t size)
+int pad_to_woody(size_t size)
 {
     size_t written = 0;
     size_t len = MAX_BUFF_SIZE;
@@ -124,8 +124,8 @@ static void copy_program_sections(void)
             if (pad >= (int)sizeof(payload))
             {
                 printf("PT_LOAD: pad %d cave available after section %s\n", pad, get_section_name(shdr->sh_name));
-                pad_to_woody(pad - sizeof(payload));
                 write_woody_section(shdr);
+                pad_to_woody(pad - sizeof(payload));
                 written = 1;
             } else {
                 printf("size not enough\n");
@@ -218,11 +218,8 @@ int is_elf(const char *file)
             if (!write_header(hdr))
             {
                 copy_program_headers();
-                debug("pheaders copied");
                 find_strtab();
-                debug("strtab found");
                 copy_program_sections();
-                debug("sections copied");
 #ifdef COPY_HEADERS
                 copy_section_headers();
                 // write_to_woody(g_elf.mem + g_elf.woodysz, g_elf.size - g_elf.woodysz);

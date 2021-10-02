@@ -26,8 +26,9 @@ void write_payload()
 #ifndef COPY_HEADERS
     g_elf.hdr.e_shoff = 0;
     g_elf.hdr.e_shnum = 0;
-    g_elf.hdr.e_entry = g_elf.woody_offset + g_elf.baseimage;
 #endif
+    printf("base image: 0x%lx\n", g_elf.baseimage);
+    g_elf.hdr.e_entry = g_elf.woody_offset + g_elf.baseimage;
 #ifdef DEBUG
     print_elf_header(g_elf.hdr);
 #endif
@@ -54,7 +55,11 @@ void write_woody_section(Elf64_Shdr *shdr)
     for (int i = 0; i < 4; ++i)
         printf("%02x", payload_return_to_entry[i]);
     printf("\n");
-    g_elf.woody_offset = g_elf.woodysz + 1;
+    g_elf.woody_offset = g_elf.woodysz;
+    uint pad = g_elf.woodysz % 16;
+    printf("woody padding: %lu\n", g_elf.woodysz % 16);
+    if (pad)
+        pad_to_woody(pad);
     write_to_woody(payload, sizeof(payload));
 #ifdef DEBUG
     printf("%s: payload written at 0x%lx: after %s section\n", BIN, g_elf.woody_offset, get_section_name(shdr->sh_name));

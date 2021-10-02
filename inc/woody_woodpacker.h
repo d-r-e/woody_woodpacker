@@ -46,6 +46,7 @@ char *generate_key();
 int is_infected(void);
 void write_payload();
 int write_to_woody(void *mem, size_t size);
+int pad_to_woody(size_t size);
 void write_woody_section(Elf64_Shdr *shdr);
 void copy_section_headers(void);
 int copy_program_headers(void);
