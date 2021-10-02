@@ -13,6 +13,8 @@
 
 [Elf Infection (in french)](https://www.root-me.org/fr/Documentation/Applicatif/ELF-Injection?q=%2Fen%2FDocumentation%2FApplicatif%2FELF-Injection) 
 
+[Elf injector step by step](https://0x00sec.org/t/elfun-file-injector/410)
+
 [Some curiosities](http://phrack.org/issues/61/8.html#article)
 
 ```readelf -S bin```
