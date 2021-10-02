@@ -21,7 +21,7 @@ int copy_program_headers(void)
         //     // phdr->p_filesz += sizeof(payload);
         // }
         // phdr->p_flags = PF_X + PF_W + PF_R;
-        if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
+        if ((char *)phdr + sizeof(*phdr) > (char *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 #ifdef DEBUG
         printf("shdr 0x%.8lx -> 0x%.8lx size %d flags: [%c%c%c] type: %d\n",

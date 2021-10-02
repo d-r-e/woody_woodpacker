@@ -1,7 +1,7 @@
 NAME=woody_woodpacker
 SRC=src/main.c src/string.c src/elf.c src/injection.c src/random.c src/headers.c
 OBJ = $(SRC:.c=.o)
-FLAGS= -g -Wall -Wextra -Werror -Wformat-security
+FLAGS= -Wall -Wextra -Werror -fpie -Wformat-security -Wpedantic
 LIBFT=libft/libft.a
 INC=inc/$(NAME).h
 
@@ -49,7 +49,7 @@ s: $(NAME)
 	@echo
 	@./woody
 h: $(NAME)
-	@rm -f woody
+	@rm -f wood
 	./$(NAME) asm/helloworld
 	@echo
 	@./woody

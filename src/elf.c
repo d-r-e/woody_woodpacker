@@ -101,31 +101,42 @@ static void copy_program_sections(void)
 {
     Elf64_Shdr *shdr = NULL;
     Elf64_Shdr *prev = NULL;
-
+    Elf64_Shdr *next = NULL;
+    int last = 0;
     int pad = 0;
     int written = 0;
 
     for (int i = 0; i < g_elf.hdr.e_shnum; ++i)
     {
+        if (i == g_elf.hdr.e_shnum - 1)
+            last = 1;
         shdr = malloc(sizeof(*shdr));
         ft_memcpy(shdr, g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr), sizeof(*shdr));
         // if (i < g_elf.hdr.e_shnum - 2)
         //     next = (Elf64_Shdr *)(g_elf.hdr.e_shoff + (i + 1) * sizeof(*shdr));
         // else
         //     next = NULL;
-        if ((void *)shdr + sizeof(*shdr) > (void *)(g_elf.mem + g_elf.size))
+        if (!ft_strcmp(".text", get_section_name(shdr->sh_name)))
+        {
+            printf(".text addr: 0x%lx\n", shdr->sh_offset);
+            g_elf.text_addr = shdr->sh_offset;
+        }
+        if ((char*)shdr + sizeof(*shdr) > (char*)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
         pad = 0;
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
-        
-        if (shdr->sh_type == PT_LOAD && shdr->sh_flags & SHF_EXECINSTR && written == 0)
+        if (last)
+            next = NULL;
+        else
+            next = (Elf64_Shdr*)(g_elf.mem + g_elf.hdr.e_shoff + (i + 1) * sizeof(*shdr));
+        if (shdr->sh_type == PT_LOAD && next && shdr->sh_offset >= g_elf.text_addr &&  shdr->sh_flags & SHF_EXECINSTR && written == 0)
         {
             if (pad >= (int)sizeof(payload))
             {
                 printf("PT_LOAD: pad %d cave available after section %s\n", pad, get_section_name(shdr->sh_name));
-                write_woody_section(shdr);
                 pad_to_woody(pad - sizeof(payload));
+                write_woody_section(shdr);
                 written = 1;
             } else {
                 printf("size not enough\n");

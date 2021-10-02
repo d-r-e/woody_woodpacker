@@ -32,6 +32,7 @@ typedef struct s_elf
     char *key;
     Elf64_Addr woody_offset;
     Elf64_Addr baseimage;
+    Elf64_Addr text_addr;
     Elf64_Shdr woodyshdr;
 } t_elf;
 
