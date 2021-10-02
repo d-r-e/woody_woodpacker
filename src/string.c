@@ -9,7 +9,6 @@ void	strerr(const char *s)
 	exit (-1);
 }
 
-
 void debug(const char *s)
 {
 	#ifdef DEBUG

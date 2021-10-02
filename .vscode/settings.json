@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "elf.h": "c"
+        "elf.h": "c",
+        "typeinfo": "c",
+        "woody_woodpacker.h": "c"
     }
 }

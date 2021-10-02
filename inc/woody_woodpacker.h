@@ -15,7 +15,11 @@
 # define WOODY_LEN 16
 
 // # define COPY_HEADERS
-# define SECTION ".bss"
+# define SECTION ".text"
+
+static char payload[] = {
+  '\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\x41','\x50','\x41','\x51','\x41','\x52','\xbf','\x01','\x00','\x00','\x00','\xeb','\x0d','\x5e','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xee','\xff','\xff','\xff','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a','\x41','\x5a','\x41','\x59','\x41','\x58','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\xb8','\x11','\x11','\x11','\x11','\xff','\xe0'
+  };
 
 typedef struct s_elf
 {
@@ -46,9 +50,6 @@ void write_woody_section(Elf64_Shdr *shdr);
 void copy_section_headers(void);
 int copy_program_headers(void);
 
-static uint8_t payload[] = {
-    '\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\x41','\x50','\x41','\x51','\x41','\x52','\xbf','\x01','\x00','\x00','\x00','\xeb','\x0d','\x5e','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xee','\xff','\xff','\xff','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a','\x41','\x5a','\x41','\x59','\x41','\x58','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\xe9','\x00','\x00','\x00','\x00','\xc3'
-    };
 // static uint8_t payload[] = {0x9c, 0x50, 0x57, 0x56, 0x54, 0x52, 0x51, 0x41, 0x50, 0x41,
 //   0x51, 0x41, 0x52, 0xbf, 0x01, 0x00, 0x00, 0x00, 0xe9, 0x1d,
 //   0x01, 0x00, 0x00, 0x5e, 0xba, 0x10, 0x00, 0x00, 0x00, 0x48,

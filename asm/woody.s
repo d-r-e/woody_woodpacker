@@ -36,5 +36,5 @@ finish:
 	pop rdi
 	pop rax
 	popfq
-	jmp _start
-	ret
+	mov rax, 0x11111111
+	jmp rax

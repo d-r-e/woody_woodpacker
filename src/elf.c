@@ -1,7 +1,6 @@
 #include "../inc/woody_woodpacker.h"
 
 t_elf g_elf;
-
 int write_to_woody(void *mem, size_t size)
 {
     (void)payload;
@@ -102,7 +101,6 @@ static void copy_program_sections(void)
 {
     Elf64_Shdr *shdr = NULL;
     Elf64_Shdr *prev = NULL;
-    Elf64_Shdr *next = NULL;
 
     int pad = 0;
     int written = 0;
@@ -120,12 +118,18 @@ static void copy_program_sections(void)
         pad = 0;
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
-        if (shdr->sh_type == PT_LOAD && next && next->sh_type == PT_LOAD && shdr->sh_flags & SHF_EXECINSTR && pad >= (int)sizeof(payload) && written == 0)
+        
+        if (shdr->sh_type == PT_LOAD && shdr->sh_flags & SHF_EXECINSTR && written == 0)
         {
-            printf("PT_LOAD: pad %d cave available\n", pad);
-            pad_to_woody(pad - sizeof(payload));
-            write_woody_section(shdr);
-            written = 1;
+            if (pad >= (int)sizeof(payload))
+            {
+                printf("PT_LOAD: pad %d cave available after section %s\n", pad, get_section_name(shdr->sh_name));
+                pad_to_woody(pad - sizeof(payload));
+                write_woody_section(shdr);
+                written = 1;
+            } else {
+                printf("size not enough\n");
+            }
         }
         else if (shdr->sh_type != SHT_NOBITS)
             pad_to_woody(pad);

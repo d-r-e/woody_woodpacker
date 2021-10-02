@@ -1,10 +1,5 @@
 #include "../inc/woody_woodpacker.h"
 
-// char payload[] = {"\x48\x31\xf6\x56\x48\xbf"
-// 		  "\x2f\x62\x69\x6e\x2f"
-// 		  "\x2f\x73\x68\x57\x54"
-// 		  "\x5f\xb0\x3b\x99\x0f\x05"};
-
 int is_infected(void)
 {
     (void)payload;
@@ -17,7 +12,7 @@ void write_payload()
 {
     Elf64_Addr offset;
 
-    offset = g_elf.woody_offset + 1;
+    offset = g_elf.woody_offset;
     g_elf.woodyfd = open("woody", O_RDWR);
     printf("file infected from offset %lu:0x%08lx\n", offset, offset);
 // #ifdef DEBUG
@@ -28,12 +23,13 @@ void write_payload()
     g_elf.hdr.e_shoff += sizeof(payload);
     g_elf.hdr.e_shnum++;
 #endif
-#ifdef DEBUG
-    print_elf_header(g_elf.hdr);
-#endif
 #ifndef COPY_HEADERS
     g_elf.hdr.e_shoff = 0;
     g_elf.hdr.e_shnum = 0;
+    g_elf.hdr.e_entry = g_elf.woody_offset + g_elf.baseimage;
+#endif
+#ifdef DEBUG
+    print_elf_header(g_elf.hdr);
 #endif
     lseek(g_elf.woodyfd, 0, SEEK_SET);
     write(g_elf.woodyfd, (void *)&g_elf.hdr, sizeof(g_elf.hdr));
@@ -43,7 +39,22 @@ void write_payload()
 void write_woody_section(Elf64_Shdr *shdr)
 {
     (void)shdr;
-    g_elf.woody_offset = g_elf.woodysz;
+    char *payload_return_to_entry;
+    const char address[] = {0x11, 0x11, 0x11, 0x11};
+
+    for (uint i = 0; i < sizeof(payload) - 3; ++i)
+    {
+        if (!ft_strncmp(&payload[i], address, 4))
+            payload_return_to_entry = &payload[i];
+    }
+    for (int i = 0; i < 4; ++i)
+        printf("%02x", payload_return_to_entry[i]);
+    printf("\n");
+    ft_memcpy((void*)payload_return_to_entry, (void*)&g_elf.hdr.e_entry, 4);
+    for (int i = 0; i < 4; ++i)
+        printf("%02x", payload_return_to_entry[i]);
+    printf("\n");
+    g_elf.woody_offset = g_elf.woodysz + 1;
     write_to_woody(payload, sizeof(payload));
 #ifdef DEBUG
     printf("%s: payload written at 0x%lx: after %s section\n", BIN, g_elf.woody_offset, get_section_name(shdr->sh_name));
