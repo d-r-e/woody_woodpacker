@@ -102,6 +102,8 @@ static void copy_program_sections(void)
 {
     Elf64_Shdr *shdr = NULL;
     Elf64_Shdr *prev = NULL;
+    Elf64_Shdr *next = NULL;
+
     int pad = 0;
     int written = 0;
 
@@ -109,45 +111,33 @@ static void copy_program_sections(void)
     {
         shdr = malloc(sizeof(*shdr));
         ft_memcpy(shdr, g_elf.mem + g_elf.hdr.e_shoff + i * sizeof(*shdr), sizeof(*shdr));
+        // if (i < g_elf.hdr.e_shnum - 2)
+        //     next = (Elf64_Shdr *)(g_elf.hdr.e_shoff + (i + 1) * sizeof(*shdr));
+        // else
+        //     next = NULL;
         if ((void *)shdr + sizeof(*shdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
         pad = 0;
         if (g_elf.woodysz < shdr->sh_offset)
             pad = (shdr->sh_offset - g_elf.woodysz);
-        if (shdr->sh_type == PT_LOAD  && shdr->sh_flags & SHF_EXECINSTR && pad >= (int)sizeof(payload) && written == 0)
+        if (shdr->sh_type == PT_LOAD && next && next->sh_type == PT_LOAD && shdr->sh_flags & SHF_EXECINSTR && pad >= (int)sizeof(payload) && written == 0)
         {
             printf("PT_LOAD: pad %d cave available\n", pad);
             pad_to_woody(pad - sizeof(payload));
             write_woody_section(shdr);
             written = 1;
         }
-        else
+        else if (shdr->sh_type != SHT_NOBITS)
             pad_to_woody(pad);
-//         if (!ft_strcmp(SECTION, get_section_name(shdr->sh_name)))
-//         {
-// #ifdef DEBUG
-//             printf("%s section found. Size: %lu\n", SECTION, shdr->sh_size);
-// #endif
-//             ;
-//         }
-#ifdef DEBUG
-#endif
-        if (written == 0 && prev && !ft_strcmp(SECTION, get_section_name(prev->sh_name))) //!ft_strcmp(get_section_name(prev->sh_name), ".bss") && written == 0)
-        {
-#ifdef MODIFY
-            printf("%s has passed. Pad size: %u\n", SECTION, pad);
-            write_woody_section(shdr);
-            written = 1;
-#endif 
         if (shdr->sh_type)
         {
-            printf("%3d| %-20s %04lx-%04lx sz: %7lu  type:%d flags:%lx algn: %3lu pad: %4d\n",
+            printf("%3d| %-20s %04lx-%04lx sz: %7lu  type:%d flg:%4lx algn:%3lu pad: %4d\n",
                    i,
                    get_section_name(shdr->sh_name),
                    shdr->sh_offset, shdr->sh_offset + shdr->sh_size,
                    shdr->sh_size, shdr->sh_type < 10 ? shdr->sh_type : 0, shdr->sh_flags, shdr->sh_addralign,
                    pad);
-        }
+        
         }
         (void)prev;
         // if (i == g_elf.hdr.e_shnum - 1 && written == 0)
@@ -159,7 +149,7 @@ static void copy_program_sections(void)
         if (shdr->sh_type != SHT_NOBITS)
             write_to_woody(g_elf.mem + shdr->sh_offset, shdr->sh_size);
 #ifdef COPY_HEADERS
-        else if (shdr->sh_type == SHT_NOBITS)
+        else if (shdr->sh_type == SHT_NOBITS || i == g_elf.hdr.e_shnum - 1)
         {
             pad_to_woody(pad);
             //write_woody_section(shdr);
@@ -176,9 +166,9 @@ static void copy_program_sections(void)
         free(shdr);
         // printf("align: %ld, ret %d \n", phdr->p_align, ret);
     }
-#ifdef MODIFY
     if (written == 0)
         printf("Mal asunto!\n");
+#ifdef MODIFY
 #endif
 }
 
@@ -224,11 +214,11 @@ int is_elf(const char *file)
             if (!write_header(hdr))
             {
                 copy_program_headers();
-                puts("pheaders copied");
+                debug("pheaders copied");
                 find_strtab();
-                puts("strtab found");
+                debug("strtab found");
                 copy_program_sections();
-                puts("sections copied");
+                debug("sections copied");
 #ifdef COPY_HEADERS
                 copy_section_headers();
                 // write_to_woody(g_elf.mem + g_elf.woodysz, g_elf.size - g_elf.woodysz);

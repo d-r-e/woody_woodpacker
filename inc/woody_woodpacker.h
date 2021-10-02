@@ -14,7 +14,7 @@
 # define PASS_LENGTH 16
 # define WOODY_LEN 16
 
-# define COPY_HEADERS
+// # define COPY_HEADERS
 # define SECTION ".bss"
 
 typedef struct s_elf
@@ -32,6 +32,7 @@ typedef struct s_elf
 } t_elf;
 
 void strerr(const char *s);
+void debug(const char *s);
 int is_elf(const char *file);
 const char *get_section_name(int index);
 void print_elf_header(Elf64_Ehdr hdr);

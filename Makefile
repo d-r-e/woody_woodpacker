@@ -58,7 +58,7 @@ v: $(NAME)
 	valgrind ./woody
 diff: $(NAME)
 	@rm -f woody
-	./diff.sh resources/sample2
+	./diff.sh asm/h*
 
 norm:
 	norminette src/*.c

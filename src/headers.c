@@ -15,23 +15,23 @@ int copy_program_headers(void)
         ft_memcpy(phdr, g_elf.mem + g_elf.hdr.e_phoff + i * g_elf.hdr.e_phentsize, sizeof(*phdr));
         if (!g_elf.baseimage && phdr->p_type == PT_LOAD)
             g_elf.baseimage = phdr->p_vaddr;
-        if (i == g_elf.hdr.e_phnum - 1)
-        {
-            printf("modifying program header for last pt_load\n");
-            // phdr->p_filesz += sizeof(payload);
-        }
+        // if (i == g_elf.hdr.e_phnum - 1)
+        // {
+        //     printf("modifying program header for last pt_load\n");
+        //     // phdr->p_filesz += sizeof(payload);
+        // }
         // phdr->p_flags = PF_X + PF_W + PF_R;
         if ((void *)phdr + sizeof(*phdr) > (void *)(g_elf.mem + g_elf.size))
             strerr("wrong file format");
 #ifdef DEBUG
-        printf("copying segment header 0x%.8lx -> 0x%.8lx size %d flags: [%c%c%c] type: %4d\n",
+        printf("shdr 0x%.8lx -> 0x%.8lx size %d flags: [%c%c%c] type: %d\n",
                (char *)phdr - (char *)g_elf.mem,
                (char *)phdr - (char *)g_elf.mem + g_elf.hdr.e_phentsize,
                g_elf.hdr.e_phentsize,
                phdr->p_flags & PF_R ? 'r' : ' ',
                phdr->p_flags & PF_W ? 'w' : ' ',
                phdr->p_flags & PF_X ? 'x' : ' ',
-               phdr->p_type);
+               phdr->p_type < 10 ? phdr->p_type : 0);
 #endif
         write_to_woody(phdr, g_elf.hdr.e_phentsize);
         (void)prev;
