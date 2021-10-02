@@ -61,12 +61,12 @@ void print_elf_header(Elf64_Ehdr hdr)
 {
     printf("------------------------------------------\n");
     printf("e_phoff: %-5lu\n", hdr.e_phoff);
-    printf("e_entry: 0x%-8lx\n", hdr.e_entry);
-    printf("e_shnum: %-5u\n", hdr.e_shnum);
+    // printf("e_entry: 0x%-8lx\n", hdr.e_entry);
+    // printf("e_shnum: %-5u\n", hdr.e_shnum);
     printf("e_shoff: 0x%-5lx\n", hdr.e_shoff);
     printf("e_phoff: 0x%-5lx\n", hdr.e_phoff);
-    printf("e_phentsize: %-5u\n", hdr.e_phentsize);
-    printf("e_ehsize: %-5u\n", hdr.e_ehsize);
+    // printf("e_phentsize: %-5u\n", hdr.e_phentsize);
+    // printf("e_ehsize: %-5u\n", hdr.e_ehsize);
     printf("e_phnum: %-u\n", hdr.e_phnum);
     printf("e_entry: 0x%-8lx\n", hdr.e_entry);
     printf("e_shstrndx: 0x%-8x\n", hdr.e_shstrndx);
@@ -130,13 +130,14 @@ static void copy_program_sections(void)
             next = NULL;
         else
             next = (Elf64_Shdr*)(g_elf.mem + g_elf.hdr.e_shoff + (i + 1) * sizeof(*shdr));
-        if (shdr->sh_type == PT_LOAD && next && shdr->sh_offset >= g_elf.text_addr &&  shdr->sh_flags & SHF_EXECINSTR && written == 0)
+        (void)next;
+        if (shdr->sh_type == PT_LOAD && shdr->sh_flags & SHF_EXECINSTR && written == 0)
         {
             if (pad >= (int)sizeof(payload))
             {
                 printf("PT_LOAD: pad %d cave available after section %s\n", pad, get_section_name(shdr->sh_name));
-                pad_to_woody(pad - sizeof(payload));
                 write_woody_section(shdr);
+                pad_to_woody(pad - sizeof(payload));
                 written = 1;
             } else {
                 printf("size not enough\n");

@@ -29,7 +29,7 @@ void write_payload()
 #endif
     printf("base image: 0x%lx entry: 0x%lx .text: 0x%lx\n", g_elf.baseimage,g_elf.hdr.e_entry, g_elf.text_addr);
 
-    g_elf.hdr.e_entry = g_elf.woody_offset + (g_elf.baseimage);
+    g_elf.hdr.e_entry = g_elf.woody_offset + g_elf.baseimage + (g_elf.text_addr - g_elf.hdr.e_entry);
     printf("base image: 0x%lx entry: 0x%lx .text: 0x%lx\n", g_elf.baseimage,g_elf.hdr.e_entry, g_elf.text_addr);
     printf("%lx\n", g_elf.hdr.e_entry - g_elf.text_addr );
     printf("%lx\n",g_elf.baseimage);
@@ -49,22 +49,28 @@ void write_woody_section(Elf64_Shdr *shdr)
 {
     (void)shdr;
     char *payload_return_to_entry;
-    const char address[] = {0x11, 0x11, 0x11, 0x11};
+    const char address[] = "\x42\x42\x42\x42";
 
     for (uint i = 0; i < sizeof(payload) - 3; ++i)
     {
         if (!ft_strncmp(&payload[i], address, 4))
             payload_return_to_entry = &payload[i];
     }
+#ifdef DEBUG
     for (int i = 0; i < 4; ++i)
         printf("%02x", payload_return_to_entry[i]);
     printf("\n");
+#endif
     ft_memcpy((void*)payload_return_to_entry, (void*)&g_elf.hdr.e_entry, 4);
+#ifdef DEBUG
     for (int i = 0; i < 4; ++i)
-        printf("%02x", payload_return_to_entry[i]);
+        printf("%02x", payload_return_to_entry[3 - i]);
     printf("\n");
+#endif
     g_elf.text_addr = g_elf.hdr.e_entry;
     g_elf.woody_offset = g_elf.woodysz;
+    while(g_elf.woodysz % 16)
+        pad_to_woody(1);
     // uint pad = g_elf.woodysz % 16;
     // printf("woody padding: %lu\n", g_elf.woodysz % 16);
     // if (pad)

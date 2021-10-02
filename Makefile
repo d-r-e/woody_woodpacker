@@ -58,7 +58,7 @@ v: $(NAME)
 	valgrind ./woody
 diff: $(NAME)
 	@rm -f woody
-	./diff.sh asm/h*
+	./diff.sh asm/helloworld
 difff: $(NAME)
 	@rm -f woody
 	./diff.sh resources/sample2
