@@ -1,6 +1,7 @@
 woody_woodpacker
 woody
 *.pdf
+sec/*
 # Prerequisites
 *.d
 *.png
