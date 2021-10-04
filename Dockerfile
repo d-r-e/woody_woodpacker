@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:buster
 LABEL maintainer darodrig
 RUN apt update && apt upgrade -y
 RUN apt install -y make gcc git vim man gdb file valgrind lsof zsh curl

@@ -36,5 +36,5 @@ finish:
 	pop rdi
 	pop rax
 	popfq
-	mov rax, 0x11111111
+	mov rax, 0x42424243
 	jmp rax
