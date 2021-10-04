@@ -3,9 +3,15 @@ SRC=src/main.c src/libft.c
 OBJ = $(SRC:.c=.o)
 FLAGS= -g -Wall -Wextra -Werror -Wformat-security -fsanitize=address
 INC=inc/woody.h
+ASM=asm/payload
+ASMSRC=asm/woody.s
 
-$(NAME): $(OBJ)
+$(NAME): $(ASM) $(OBJ)
 	gcc $(FLAGS) $(OBJ) -o $(NAME)
+
+$(ASM): $(ASMSRC)
+	nasm -felf64 $(ASMSRC) -o asm/woody.o
+	ld asm/woody.o -o asm/payload
 
 %.o: %.c $(INC)
 		gcc $(FLAGS) -c -o $@ $<
