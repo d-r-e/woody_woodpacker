@@ -1,7 +1,7 @@
 NAME=woody_woodpacker
 SRC=src/main.c src/libft.c
 OBJ = $(SRC:.c=.o)
-FLAGS= -Wall -Wextra -Werror -Wformat-security
+FLAGS= -g -Wall -Wextra -Werror -Wformat-security -fsanitize=address
 INC=inc/woody.h
 
 $(NAME): $(OBJ)

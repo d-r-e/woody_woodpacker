@@ -13,6 +13,7 @@ unsigned long	ft_strlen(const char *s)
 		++i;
 	return (i);
 }
+
 /*! ft_strcmp
  * @param s1 string to compare
  * @param s2 string to compare
@@ -25,6 +26,23 @@ int ft_strcmp(const char *s1, const char *s2)
 	if (!s1 || !s2)
 		return(diff);
 	while (s1[diff] && s2[diff] && s1[diff] == s2[diff])
+		diff++;
+	return s2[diff] - s1[diff];
+}
+
+/*! ft_strncmp
+ * @param s1 string to compare
+ * @param s2 string to compare
+ * @param n compare up to this amount of bytes
+ * @returns (int) lexicographical difference of both strings, or 0 if equal
+ */
+int ft_strncmp(const char *s1, const char *s2, unsigned int n)
+{
+	int diff = 0;
+
+	if (!s1 || !s2)
+		return(diff);
+	while (--n > 0 && s1[diff] && s2[diff] && s1[diff] == s2[diff])
 		diff++;
 	return s2[diff] - s1[diff];
 }

@@ -6,4 +6,7 @@ gcc src/*.c -Wall -Wextra -Werror -o woody_woodpacker
 echo
 file woody
 echo
+if [ -n "${2-}" ]; then
+    ./woody
+fi
 # ./woody

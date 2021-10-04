@@ -1,7 +1,8 @@
 #include "../inc/woody.h"
 
 char payload[] = {
-	'\x9c', '\x50', '\x57', '\x56', '\x54', '\x52', '\x51', '\x41', '\x50', '\x41', '\x51', '\x41', '\x52', '\xbf', '\x01', '\x00', '\x00', '\x00', '\xeb', '\x0d', '\x5e', '\xba', '\x0f', '\x00', '\x00', '\x00', '\x48', '\x89', '\xf8', '\x0f', '\x05', '\xeb', '\x15', '\xe8', '\xee', '\xff', '\xff', '\xff', '\x2e', '\x2e', '\x2e', '\x2e', '\x57', '\x4f', '\x4f', '\x44', '\x59', '\x2e', '\x2e', '\x2e', '\x2e', '\x2e', '\x0a', '\x41', '\x5a', '\x41', '\x59', '\x41', '\x58', '\x59', '\x5a', '\x5c', '\x5e', '\x5f', '\x58', '\x9d', '\xb8', '\x42', '\x42', '\x42', '\x42', '\xff', '\xe0'};
+	'\x9c', '\x50', '\x57', '\x56', '\x54', '\x52', '\x51', '\x41', '\x50', '\x41', '\x51', '\x41', '\x52', '\xbf', '\x01', '\x00', '\x00', '\x00', '\xeb', '\x0d', '\x5e', '\xba', '\x0f', '\x00', '\x00', '\x00', '\x48', '\x89', '\xf8', '\x0f', '\x05', '\xeb', '\x15', '\xe8', '\xee', '\xff', '\xff', '\xff', '\x2e', '\x2e', '\x2e', '\x2e', '\x57', '\x4f', '\x4f', '\x44', '\x59', '\x2e', '\x2e', '\x2e', '\x2e', '\x2e', '\x0a', '\x41', '\x5a', '\x41', '\x59', '\x41', '\x58', '\x59', '\x5a', '\x5c', '\x5e', '\x5f', '\x58', '\x9d', '\xb8', '\x42', '\x42', '\x42', '\x42', '\xff', '\xe0'
+};
 
 Elf64_Ehdr *g_hdr = 0;
 Elf64_Addr *g_strtab = 0;
@@ -72,14 +73,14 @@ void add_original_entry_to_payload(void)
 {
 	Elf64_Addr entry;
 	char *addr = NULL;
-	entry = g_hdr->e_entry + 0x40000;
+	entry = g_hdr->e_entry;
 	for (uint i = 0; i < sizeof(payload) - 3; ++i)
     {
         if (strncmp(&payload[i], "\x42\x42\x42\x42", 4) == 0)
             addr = &payload[i];
     }
 	if (addr)
-		ft_memcpy(addr, (void*)&entry, sizeof(entry));
+		memcpy(addr, (void*)&entry, 4);
 	else
 		dprintf(2, RED"woody_woodpacker: error: payload not found.\n"DEFAULT);
 }
