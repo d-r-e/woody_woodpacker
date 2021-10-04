@@ -2,7 +2,8 @@ woody_woodpacker
 woody
 *.pdf
 sec/*
-
+usavoia
+usavoia/*
 # Prerequisites
 *.d
 *.png

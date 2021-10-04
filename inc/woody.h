@@ -15,6 +15,10 @@
 #define CYAN "\033[34m"
 #define DEFAULT "\033[0m"
 
+#ifndef BASEIMAGE
+# define BASEIMAGE 0x1000
+#endif
+
 size_t	ft_strlen(const char *s);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_strncmp(const char *s1, const char *s2, unsigned int n);
