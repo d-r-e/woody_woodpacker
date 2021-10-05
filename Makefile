@@ -31,7 +31,7 @@ commit: add
 push: commit
 		git push origin main
 
-test: re x h
+test: re x h fclean
 	./test.sh /bin/bash 
 
 x: $(NAME)
