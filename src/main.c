@@ -1,11 +1,15 @@
 #include "../inc/woody.h"
-
+extern void _start(void);
 char payload[] = {
-'\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\x41','\x50','\x41','\x51','\x41','\x52','\xbf','\x01','\x00','\x00','\x00','\xeb','\x0d','\x5e','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xee','\xff','\xff','\xff','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a','\x41','\x5a','\x41','\x59','\x41','\x58','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\x48','\x31','\xc0','\x41','\xbd','\x42','\x42','\x42','\x42','\x41','\xff','\xe5'	
+'\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\x41','\x50','\x41','\x51','\x41','\x52','\xbf','\x01','\x00','\x00','\x00','\xeb','\x0d','\x5e','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xee','\xff','\xff','\xff','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a','\x41','\x5a','\x41','\x59','\x41','\x58','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\x41','\xbd','\x42','\x42','\x42','\x42','\x4c','\x8d','\x25','\xb0','\xff','\xff','\x4d','\x29','\xec','\x41','\xff','\x24','\x24'
 };
+// char payload[] = {
+// '\x9c', '\x50', '\x57', '\x56', '\x54', '\x52', '\x51', '\x41', '\x50', '\x41', '\x51', '\x41', '\x52', '\xbf', '\x01', '\x00', '\x00', '\x00', '\xeb', '\x0d', '\x5e', '\xba', '\x0f', '\x00', '\x00', '\x00', '\x48', '\x89', '\xf8', '\x0f', '\x05', '\xeb', '\x15', '\xe8', '\xee', '\xff', '\xff', '\xff', '\x2e', '\x2e', '\x2e', '\x2e', '\x57', '\x4f', '\x4f', '\x44', '\x59', '\x2e', '\x2e', '\x2e', '\x2e', '\x2e', '\x0a', '\x41', '\x5a', '\x41', '\x59', '\x41', '\x58', '\x59', '\x5a', '\x5c', '\x5e', '\x5f', '\x58', '\x9d', '\xb8', '\x42', '\x42', '\x42', '\x42', '\xff', '\xe0'
+// };
+
 Elf64_Ehdr *g_hdr = 0;
-Elf64_Addr *g_strtab = 0;
 size_t g_binsize = 0;
+Elf64_Addr g_baseaddr = 0;
 
 static int ft_error(const char *s)
 {
@@ -20,8 +24,8 @@ static Elf64_Ehdr *is_64_elf(char *mem, size_t size)
 	if (size < sizeof(Elf64_Ehdr) + sizeof(Elf64_Phdr) + sizeof(Elf64_Shdr))
 		return (NULL);
 	hdr = malloc(sizeof(*hdr));
-	memcpy(hdr, mem, sizeof(*hdr));
-	if (!memcmp(ELFMAG, hdr->e_ident, ft_strlen(ELFMAG)) &&
+	ft_memcpy(hdr, mem, sizeof(*hdr));
+	if (!ft_strncmp(ELFMAG, (const char*)hdr->e_ident, ft_strlen(ELFMAG)) &&
 		hdr->e_ident[EI_CLASS] == ELFCLASS64)
 		return (hdr);
 	else
@@ -34,8 +38,8 @@ static int duplicate_binary(char *mem, size_t size)
 	int woodyfd;
 	size_t written;
 
-	woodyfd = open("woody", O_CREAT | O_TRUNC | O_RDWR, 777);
-	if (woodyfd < 3)
+	woodyfd = open("woody", O_CREAT | O_TRUNC | O_RDWR, 0700);
+	if (woodyfd < 0)
 		return (-1);
 	if ((written = write(woodyfd, mem, size)) < size)
 		return (-2);
@@ -46,10 +50,11 @@ void add_original_entry_to_payload(Elf64_Addr new_entry)
 {
 	Elf64_Addr jmp;
 	char *addr = NULL;
-	jmp = g_hdr->e_entry - (new_entry );
 
+	jmp = new_entry;
+	(void)new_entry;
 	for (uint i = 0; i < sizeof(payload) - 3; ++i) {
-		if (strncmp(&payload[i], "\x42\x42\x42\x42", 4) == 0)
+		if (ft_strncmp(&payload[i], "\x42\x42\x42\x42", 4) == 0)
 			addr = &payload[i];
 	}
 	if (addr) {
@@ -67,6 +72,14 @@ Elf64_Addr find_cave(void *mem)
 	unsigned long i = 0, j = 0;
 
 	phdr = (Elf64_Phdr *)(mem + g_hdr->e_phoff);
+	for (i = 0; i < g_hdr->e_phnum; ++i)
+	{
+		if (phdr[i].p_type == PT_LOAD)
+		{
+			g_baseaddr = phdr[i].p_vaddr;
+			break;
+		}
+	}
 	for (i = 0; i < g_hdr->e_phnum; ++i) {
 		if (phdr[i].p_filesz > 0 && phdr[i].p_filesz == phdr[i].p_memsz && (phdr[i].p_flags & PF_X))
 		{
@@ -76,7 +89,7 @@ Elf64_Addr find_cave(void *mem)
 				if (phdr[j].p_offset >= start && phdr[j].p_offset < end && phdr[j].p_filesz > 0)
 					break;
 			}
-			if (j == g_hdr->e_phnum) // found last program header
+			if (j == g_hdr->e_phnum)
 			{
 				add_original_entry_to_payload(start + i);
 				ft_memcpy(mem + start + i, payload, sizeof(payload));
@@ -90,12 +103,15 @@ Elf64_Addr find_cave(void *mem)
 	return (0);
 }
 
+
+
 int main(int ac, char **av)
 {
-	int woodyfd;
+	int woodyfd = 0;
 	Elf64_Off cave = 0;
 	g_hdr = NULL;
 
+	printf("_start: %p\n", &_start);
 	if (ac != 2)
 		ft_error("usage: woody_woodpacker binary");
 	if (!ft_strcmp("woody", av[1]))
@@ -108,18 +124,21 @@ int main(int ac, char **av)
 		ft_error("error: binary could not be read.");
 	g_binsize = lseek(fd, 0, SEEK_END);
 	char *mem = mmap(NULL, g_binsize, PROT_READ, MAP_SHARED, fd, 0);
+	if (mem == MAP_FAILED)
+		printf("first map failed\n");
 	g_hdr = is_64_elf(mem, g_binsize);
 	if (!g_hdr)
 	{
 		munmap(mem, g_binsize);
 		ft_error("error: binary not compatible");
 	}
-	woodyfd = duplicate_binary(mem, g_binsize);
+	else
+		woodyfd = duplicate_binary(mem, g_binsize);
 	munmap(mem, g_binsize);
-
+	mem = NULL;
 	if (woodyfd > 0)
 	{
-		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE, MAP_SHARED, woodyfd, 0);
+		mem = mmap(NULL, g_binsize,PROT_WRITE, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
 			cave = find_cave(mem);
@@ -133,14 +152,17 @@ int main(int ac, char **av)
 		}
 		else
 			printf("mmap failed\n");
-		close(woodyfd);
 	}
-	else
+	else if (woodyfd == -1)
+		printf("error: " RED "file could not be duplicated\n" DEFAULT);
+	else if (woodyfd == -2)
 		printf("error: " RED "file could not be duplicated\n" DEFAULT);
 	free(g_hdr);
 	close(fd);
-	if (cave == 0)
+	if (woodyfd > 0)
+		close(woodyfd);
+	if (!cave)
 		exit(-1);
 	else
-		return (0);
+		exit(0);
 }

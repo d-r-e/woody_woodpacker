@@ -1,7 +1,7 @@
 NAME=woody_woodpacker
 SRC=src/main.c src/libft.c
 OBJ = $(SRC:.c=.o)
-FLAGS= -g -Wall -Wextra -Werror -Wformat-security -fsanitize=address
+FLAGS= -Wall -Wextra -Werror -Wformat-security -fsanitize=address
 INC=inc/woody.h
 ASMSRC=asm/woody.s asm/get_opcode.sh
 
@@ -33,3 +33,13 @@ push: commit
 
 test: re
 	./test.sh /bin/bash 
+
+x: $(NAME)
+	rm -f woody
+	./woody_woodpacker woody_woodpacker
+	@echo
+	./woody
+diff: $(NAME)
+	rm -f woody
+	./$(NAME) $(NAME)
+	binwalk -W woody $(NAME) |less

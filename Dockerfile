@@ -3,9 +3,8 @@ LABEL maintainer darodrig
 RUN apt update && apt upgrade -y
 RUN apt install -y make gcc git vim man gdb file valgrind lsof zsh curl
 RUN apt install -y binwalk
-# RUN apt install -y python3 pip poppler-utils
-# RUN git clone https://github.com/radareorg/radare2 && radare2/sys/install.sh
-RUN apt install -y python3 python3-pip
+RUN apt install -y python3 python3-pip poppler-utils
+RUN git clone https://github.com/radareorg/radare2 && radare2/sys/install.sh
 RUN pip3 install norminette
 RUN apt install -y nasm
 RUN apt install -y zlib1g-dev

@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/mman.h>
-
+#include <asm/unistd.h> 
 #define RED "\033[31m"
 #define GREEN "\033[32m"
 #define CYAN "\033[34m"
