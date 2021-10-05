@@ -1,5 +1,3 @@
-
-segment .text
     global _start
 _start:
 	pushfq
@@ -12,17 +10,18 @@ _start:
 	push r8
 	push r9
 	push r10
-	mov edi, 1
+	mov rdi, 1
 	jmp woody
-woody:
-	call back
-	.string db "....WOODY.....", 10, 00
 back:
 	pop rsi
 	mov rdx, 15
 	mov rax, rdi
 	syscall
 	jmp finish
+woody:
+	call back
+	.string db "....WOODY.....", 10, 00
+
 finish:
 	pop r10
 	pop r9
@@ -34,4 +33,6 @@ finish:
 	pop rdi
 	pop rax
 	popfq
-	jmp [rsi + 0x42424242]
+	xor rax, rax
+	mov r13, 0x42424242 
+	jmp r13
