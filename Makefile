@@ -32,7 +32,6 @@ push: commit
 		git push origin main
 
 test: re x h fclean
-	./test.sh /bin/bash 
 
 x: $(NAME)
 	./woody_woodpacker woody_woodpacker
@@ -47,9 +46,17 @@ h: $(NAME) test/hello.c
 	echo
 	./woody | true
 
+e: $(NAME)
+	./$(NAME) /bin/echo
+	echo
+	./woody | true
+ee: e
+	binwalk -W woody /bin/echo
 hh: h
 	binwalk -W test/hello woody | less
 diff: $(NAME)
 	rm -f woody
 	./$(NAME) $(NAME)
 	binwalk -W woody $(NAME) |less
+
+.PHONY: test
