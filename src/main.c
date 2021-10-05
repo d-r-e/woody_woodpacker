@@ -1,8 +1,8 @@
 #include "../inc/woody.h"
 extern void _start(void);
 char payload[] = {
-'\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\x41','\x50','\x41','\x51','\x41','\x52','\xbf','\x01','\x00','\x00','\x00','\xeb','\x0d','\x5e','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xee','\xff','\xff','\xff','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a','\x41','\x5a','\x41','\x59','\x41','\x58','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\x41','\xbd','\x42','\x42','\x42','\x42','\x4c','\x8d','\x24','\x24','\x4d','\x29','\xec','\x41','\x54','\xc3'
-};
+
+'\x9c','\x50','\x57','\x56','\x54','\x52','\x51','\xeb','\x12','\x5e','\xbf','\x01','\x00','\x00','\x00','\xba','\x0f','\x00','\x00','\x00','\x48','\x89','\xf8','\x0f','\x05','\xeb','\x15','\xe8','\xe9','\xff','\xff','\xff','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x0a','\x00','\x59','\x5a','\x5c','\x5e','\x5f','\x58','\x9d','\x49','\xbd','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x4c','\x8d','\x25','\xb8','\xff','\xff','\xff','\x4d','\x29','\xec','\x41','\xff','\xe4'	};
 // char payload[] = {
 // '\x9c', '\x50', '\x57', '\x56', '\x54', '\x52', '\x51', '\x41', '\x50', '\x41', '\x51', '\x41', '\x52', '\xbf', '\x01', '\x00', '\x00', '\x00', '\xeb', '\x0d', '\x5e', '\xba', '\x0f', '\x00', '\x00', '\x00', '\x48', '\x89', '\xf8', '\x0f', '\x05', '\xeb', '\x15', '\xe8', '\xee', '\xff', '\xff', '\xff', '\x2e', '\x2e', '\x2e', '\x2e', '\x57', '\x4f', '\x4f', '\x44', '\x59', '\x2e', '\x2e', '\x2e', '\x2e', '\x2e', '\x0a', '\x41', '\x5a', '\x41', '\x59', '\x41', '\x58', '\x59', '\x5a', '\x5c', '\x5e', '\x5f', '\x58', '\x9d', '\xb8', '\x42', '\x42', '\x42', '\x42', '\xff', '\xe0'
 // };
@@ -50,15 +50,17 @@ void add_original_entry_to_payload(Elf64_Addr new_entry)
 {
 	Elf64_Addr jmp;
 	char *addr = NULL;
+	char dummy[] = "\x42\x42\x42\x42\x42\x42\x42\x42";
 
-	jmp = g_baseaddr + abs(new_entry - g_hdr->e_entry);
+	jmp = new_entry - g_hdr->e_entry;
+	jmp = -abs(jmp) + sizeof(payload);
 	(void)new_entry;
-	for (uint i = 0; i < sizeof(payload) - 3; ++i) {
-		if (ft_strncmp(&payload[i], "\x42\x42\x42\x42", 4) == 0)
+	for (uint i = 0; i < sizeof(payload) - 7; ++i) {
+		if (strncmp(&payload[i], dummy, 8) == 0)
 			addr = &payload[i];
 	}
 	if (addr) {
-		memcpy(addr, (void *)&jmp, 4);
+		memcpy(addr, (void *)&jmp, 8);
 		printf("rewritten original entrypoint into 0x%lx. Offset between original start and new start: %x\n", jmp, abs(new_entry - g_hdr->e_entry));
 	}
 	else

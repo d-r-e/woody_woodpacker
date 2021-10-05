@@ -31,13 +31,24 @@ commit: add
 push: commit
 		git push origin main
 
-test: re
+test: re x h
 	./test.sh /bin/bash 
 
 x: $(NAME)
 	./woody_woodpacker woody_woodpacker
 	ls -la woody
-	./woody
+	./woody | true
+xx: x
+	binwalk -W woody $(NAME) | less
+
+h: $(NAME) test/hello.c
+	gcc -O3 test/hello.c -o test/hello
+	./$(NAME) test/hello
+	echo
+	./woody | true
+
+hh: h
+	binwalk -W test/hello woody | less
 diff: $(NAME)
 	rm -f woody
 	./$(NAME) $(NAME)
