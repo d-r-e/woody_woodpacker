@@ -1,5 +1,5 @@
-    global _start
-_start:
+    global _woody
+_woody:
 	pushfq
 	push rax
 	push rdi
@@ -21,7 +21,6 @@ back:
 woody:
 	call back
 	.string db "....WOODY.....", 10, 00
-
 finish:
 	pop r10
 	pop r9
@@ -33,6 +32,8 @@ finish:
 	pop rdi
 	pop rax
 	popfq
-	xor rax, rax
-	mov r13, 0x42424242 
-	jmp r13
+	mov r13, 0x42424242
+	lea r12, [rel rsp]
+	sub r12, r13
+	push r12
+	ret
