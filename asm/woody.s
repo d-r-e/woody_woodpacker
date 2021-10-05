@@ -1,33 +1,28 @@
-    global _woody
-_woody:
-	pushfq
-	push rax
-	push rdi
-	push rsi
-	push rsp
-	push rdx
-	push rcx
-	jmp woody
-back:
-	pop rsi
-	mov rdi, 1
-	mov rdx, 15
-	mov rax, rdi
-	syscall
-	jmp finish
-woody:
-	call back
-	.string db "....WOODY.....", 10, 00
-finish:
-	pop rcx
-	pop rdx
-	pop rsp
-	pop rsi
-	pop rdi
-	pop rax
-	popfq
-	mov r13, 0x4242424242424242
-	lea r12, [rel _woody]
-	sub r12, r13
-	jmp r12
-	
+section .text
+  global _start
+
+_start:
+  ;; save cpu state
+  push rax
+  push rdi
+  push rsi
+  push rdx
+
+  ;; write msg to stdout
+  mov rax,1                     ; [1] - sys_write
+  mov rdi,1                     ; 0 = stdin / 1 = stdout / 2 = stderr
+  lea rsi,[rel msg]             ; pointer(mem address) to msg (*char[])
+  mov rdx, msg_end - msg        ; msg size
+  syscall                       ; calls the function stored in rax
+
+  ;; restore cpu state
+  pop rdx
+  pop rsi
+  pop rdi
+  pop rax
+
+  mov rax, 0x4242424242424242            ; changed during patching
+  jmp rax
+align 8
+  msg     db 0x1b,'[31m....WOODY.....',0x1b,'[0m',0x0a,0
+  msg_end db 0x0
