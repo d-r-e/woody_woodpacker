@@ -36,7 +36,7 @@ test: re x h fclean
 x: $(NAME)
 	./woody_woodpacker woody_woodpacker
 	ls -la woody
-	./woody | true
+	./woody || true
 xx: x
 	binwalk -W woody $(NAME) | less
 
@@ -44,14 +44,14 @@ h: $(NAME) test/hello.c
 	gcc -O3 test/hello.c -o test/hello
 	./$(NAME) test/hello
 	echo
-	./woody | true
+	./woody || true
 
 e: $(NAME)
 	./$(NAME) /bin/echo
 	echo
-	./woody | true
+	./woody || true
 ee: e
-	binwalk -W woody /bin/echo
+	binwalk -W woody /bin/echo | less
 hh: h
 	binwalk -W test/hello woody | less
 diff: $(NAME)
