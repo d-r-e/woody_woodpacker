@@ -35,9 +35,8 @@ test: re
 	./test.sh /bin/bash 
 
 x: $(NAME)
-	rm -f woody
 	./woody_woodpacker woody_woodpacker
-	@echo
+	ls -la woody
 	./woody
 diff: $(NAME)
 	rm -f woody

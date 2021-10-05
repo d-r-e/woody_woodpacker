@@ -38,7 +38,7 @@ static int duplicate_binary(char *mem, size_t size)
 	int woodyfd;
 	size_t written;
 
-	woodyfd = open("woody", O_CREAT | O_TRUNC | O_RDWR, 0700);
+	woodyfd = open("woody", O_CREAT | O_TRUNC | O_RDWR, 0777);
 	if (woodyfd < 0)
 		return (-1);
 	if ((written = write(woodyfd, mem, size)) < size)
