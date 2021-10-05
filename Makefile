@@ -59,4 +59,4 @@ diff: $(NAME)
 	./$(NAME) $(NAME)
 	binwalk -W woody $(NAME) |less
 
-.PHONY: test
+.PHONY: test re all
