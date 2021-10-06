@@ -15,6 +15,8 @@
 
 [Elf injector step by step](https://0x00sec.org/t/elfun-file-injector/410)
 
+[PIE Elf injector code example](https://github.com/mfaerevaag/elfinjector)
+
 [Some curiosities](http://phrack.org/issues/61/8.html#article)
 
 ```readelf -S bin```
