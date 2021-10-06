@@ -46,7 +46,7 @@ void patch_payload(Elf64_Addr new_entry)
 {
 	Elf64_Addr jmp;
 	char *addr = NULL;
-	char dummy[] = "\x42\x42\x42\x42\x42\x42\x42\x42";
+	char dummy[] = "\x00\x00\x00\x00";
 
 	jmp = (Elf64_Addr)(new_entry - g_hdr->e_entry);
 	jmp = -abs(jmp) + sizeof(payload);
@@ -137,7 +137,7 @@ int main(int ac, char **av)
 	mem = NULL;
 	if (woodyfd > 0)
 	{
-		mem = mmap(NULL, g_binsize,PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
+		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
 			cave = find_cave(mem);
