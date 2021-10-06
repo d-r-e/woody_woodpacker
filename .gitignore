@@ -59,5 +59,4 @@ dkms.conf
 .DS_Store
 elfinjector/
 opcode
-**/opcode
 */opcode
