@@ -1,6 +1,6 @@
 #include "../inc/woody.h"
 char payload[] = {
-'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x49','\xbd','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x41','\xff','\xe5','\x90','\x90','\x90','\x1b','\x5b','\x39','\x34','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
+'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x49','\xba','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x41','\xff','\xe2','\x90','\x90','\x90','\x1b','\x5b','\x39','\x34','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
 };
 
 Elf64_Ehdr *g_hdr = 0;
@@ -46,20 +46,28 @@ void patch_payload(Elf64_Addr new_entry)
 {
 	Elf64_Addr jmp;
 	char *addr = NULL;
-	char dummy[] = "\x00\x00\x00\x00";
+	long dummy = 0x4242424242424242;
 
-	jmp = (Elf64_Addr)(new_entry - g_hdr->e_entry);
-	jmp = -abs(jmp) + sizeof(payload);
+	jmp = (Elf64_Addr)-(new_entry - g_hdr->e_entry - sizeof(payload));
+
+	int pfd = open("asm/payload", O_RDONLY);
+	if (pfd < 0)
+	{
+		printf("payload not found\n");
+		return;
+	}
+		
+	close(pfd);
 	(void)new_entry;
-	for (uint i = 0; i < sizeof(payload) - 7; ++i) {
-		if (strncmp(&payload[i], dummy, 8) == 0)
+	for (uint i = 0; i < sizeof(payload) - (sizeof(dummy) - 1) ; ++i) {
+		if (strncmp(&payload[i], (char*)&dummy, sizeof(dummy)) == 0)
 			addr = &payload[i];
 	}
 	if (addr) {
 		ft_memcpy(addr, (void *)&jmp, sizeof(jmp));
-		printf("addr: %p -> ", (void*)jmp);
+		printf("e_entry: %p -> new e_entry %p ", (void*)g_hdr->e_entry, (void*)new_entry);
 
-		printf("rewritten original entrypoint into 0x%lx. Offset between original start and new start: %x\n", jmp, abs(new_entry - g_hdr->e_entry));
+		printf("jmp: %ld. Offset between original start and new start: %x\n", jmp, abs(new_entry - g_hdr->e_entry));
 	}
 	else
 		dprintf(2, RED "woody_woodpacker: error: payload not found.\n" DEFAULT);
@@ -81,7 +89,7 @@ Elf64_Addr find_cave(void *mem)
 		}
 	}
 	for (i = 0; i < g_hdr->e_phnum; ++i) {
-		if (phdr[i].p_filesz > 0 && phdr[i].p_filesz == phdr[i].p_memsz && (phdr[i].p_flags & PF_X))
+		if (phdr[i].p_filesz > 0 && phdr[i].p_filesz == phdr[i].p_memsz && (phdr[i].p_flags & (PF_X)))
 		{
 			start = phdr[i].p_offset + phdr[i].p_filesz;
 			end = start + sizeof(payload);
@@ -124,7 +132,11 @@ int main(int ac, char **av)
 	g_binsize = lseek(fd, 0, SEEK_END);
 	char *mem = mmap(NULL, g_binsize, PROT_READ, MAP_SHARED, fd, 0);
 	if (mem == MAP_FAILED)
+	{
 		printf("first map failed\n");
+		close (fd);
+		exit (-1);
+	}
 	g_hdr = is_64_elf(mem, g_binsize);
 	if (!g_hdr)
 	{

@@ -1,6 +1,5 @@
 section .text
   global _start
-
 _start:
   ;; save cpu state
   push rax
@@ -8,12 +7,11 @@ _start:
   push rsi
   push rdx
 
-  ;; write msg to stdout
-  mov rax,1                     ; [1] - sys_write
-  mov rdi,1                     ; 0 = stdin / 1 = stdout / 2 = stderr
-  lea rsi,[rel msg]             ; pointer(mem address) to msg (*char[])
+  mov rax, 1                     ; syscall [1] -> sys_write
+  mov rdi, 1                     ; stdout
+  lea rsi, [rel msg]             ; msg address
   mov rdx, msg_end - msg        ; msg size
-  syscall                       ; calls the function stored in rax
+  syscall
 
   ;; restore cpu state
   pop rdx
@@ -21,8 +19,8 @@ _start:
   pop rdi
   pop rax
 
-  mov rax, 0x4242424242424242            ; changed during patching
-  jmp rax
+  mov r10, 0x4242424242424242
+  jmp r10
 align 8
-  msg     db 0x1b,'[31m....WOODY.....',0x1b,'[0m',0x0a,0
+  msg     db 0x1b,'[94m....WOODY.....',0x1b,'[0m',0x0a,0
   msg_end db 0x0

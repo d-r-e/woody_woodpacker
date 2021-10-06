@@ -1,7 +1,7 @@
 NAME=woody_woodpacker
 SRC=src/main.c src/libft.c
 OBJ = $(SRC:.c=.o)
-FLAGS= -Wall -Wextra -Werror -g -Wformat-security
+FLAGS= -Wall -Wextra -Werror -g -Wformat-security -fsanitize=address
 INC=inc/woody.h
 ASMSRC=asm/woody.s asm/get_opcode.sh
 
@@ -44,13 +44,14 @@ h: $(NAME) test/hello.c
 	gcc -O3 test/hello.c -o test/hello
 	./$(NAME) test/hello
 	@echo
-	./woody || true
+	@./woody || true
 
 e: $(NAME)
 	./$(NAME) /bin/echo
 	@echo
-	./woody || true
+	@./woody || true
 ee: e
+	@echo
 	binwalk -W woody /bin/echo | less
 hh: h
 	binwalk -W test/hello woody | less
