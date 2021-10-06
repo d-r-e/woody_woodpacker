@@ -5,13 +5,14 @@ FLAGS= -Wall -Wextra -Werror -g -Wformat-security -fsanitize=address
 INC=inc/woody.h
 ASMSRC=asm/woody.s asm/get_opcode.sh
 ASM=asm/opcode
-$(NAME): $(OBJ)
+
+$(NAME): $(ASMRC) $(ASM) $(OBJ)
 	gcc $(FLAGS) $(OBJ) -o $(NAME)
 
 $(ASM): $(ASMRC)
 	./asm/get_opcode.sh
 
-%.o: %.c $(INC) $(ASM)
+%.o: %.c $(INC)
 		gcc $(FLAGS) -c -o $@ $<
 
 clean:
