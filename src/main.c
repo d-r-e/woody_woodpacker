@@ -1,7 +1,7 @@
 #include "../inc/woody.h"
 extern void _start(void);
 char payload[] = {
-'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x48','\xb8','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\xff','\xe0','\x90','\x90','\x90','\x90','\x1b','\x5b','\x33','\x31','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
+'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x48','\xb8','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\xff','\xe0','\x90','\x90','\x90','\x90','\x1b','\x5b','\x39','\x34','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
 };
 // char payload[] = {
 // '\x9c', '\x50', '\x57', '\x56', '\x54', '\x52', '\x51', '\x41', '\x50', '\x41', '\x51', '\x41', '\x52', '\xbf', '\x01', '\x00', '\x00', '\x00', '\xeb', '\x0d', '\x5e', '\xba', '\x0f', '\x00', '\x00', '\x00', '\x48', '\x89', '\xf8', '\x0f', '\x05', '\xeb', '\x15', '\xe8', '\xee', '\xff', '\xff', '\xff', '\x2e', '\x2e', '\x2e', '\x2e', '\x57', '\x4f', '\x4f', '\x44', '\x59', '\x2e', '\x2e', '\x2e', '\x2e', '\x2e', '\x0a', '\x41', '\x5a', '\x41', '\x59', '\x41', '\x58', '\x59', '\x5a', '\x5c', '\x5e', '\x5f', '\x58', '\x9d', '\xb8', '\x42', '\x42', '\x42', '\x42', '\xff', '\xe0'
@@ -56,11 +56,13 @@ void add_original_entry_to_payload(Elf64_Addr new_entry)
 	jmp = -abs(jmp) + sizeof(payload);
 	(void)new_entry;
 	for (uint i = 0; i < sizeof(payload) - 7; ++i) {
-		if (ft_strncmp(&payload[i], dummy, 8) == 0)
+		if (strncmp(&payload[i], dummy, 8) == 0)
 			addr = &payload[i];
 	}
 	if (addr) {
+		printf("addr: %2x %2x %.2x %.2x\n",  addr[0], addr[1], addr[2], addr[3]);
 		ft_memcpy(addr, (void *)&jmp, 8);
+		printf("addr: %2x %2x %.2x %.2x\n",  addr[0], addr[1], addr[2], addr[3]);
 		printf("rewritten original entrypoint into 0x%lx. Offset between original start and new start: %x\n", jmp, abs(new_entry - g_hdr->e_entry));
 	}
 	else
