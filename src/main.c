@@ -1,7 +1,6 @@
 #include "../inc/woody.h"
-extern void _start(void);
 char payload[] = {
-'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x48','\xb8','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\xff','\xe0','\x90','\x90','\x90','\x90','\x1b','\x5b','\x39','\x34','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
+'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x49','\xbd','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x41','\xff','\xe5','\x90','\x90','\x90','\x1b','\x5b','\x39','\x34','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
 };
 
 Elf64_Ehdr *g_hdr = 0;
@@ -43,13 +42,13 @@ static int duplicate_binary(char *mem, size_t size)
 	return (woodyfd);
 }
 
-void add_original_entry_to_payload(Elf64_Addr new_entry)
+void patch_payload(Elf64_Addr new_entry)
 {
 	Elf64_Addr jmp;
 	char *addr = NULL;
 	char dummy[] = "\x42\x42\x42\x42\x42\x42\x42\x42";
 
-	jmp = new_entry - g_hdr->e_entry;
+	jmp = (Elf64_Addr)(new_entry - g_hdr->e_entry);
 	jmp = -abs(jmp) + sizeof(payload);
 	(void)new_entry;
 	for (uint i = 0; i < sizeof(payload) - 7; ++i) {
@@ -57,9 +56,9 @@ void add_original_entry_to_payload(Elf64_Addr new_entry)
 			addr = &payload[i];
 	}
 	if (addr) {
-		printf("addr: %2x %2x %.2x %.2x -> ",  addr[0], addr[1], addr[2], addr[3]);
-		ft_memcpy(addr, (void *)&jmp, 8);
-		printf("addr: %2x %2x %.2x %.2x\n",  addr[0], addr[1], addr[2], addr[3]);
+		ft_memcpy(addr, (void *)&jmp, sizeof(jmp));
+		printf("addr: %p -> ", (void*)jmp);
+
 		printf("rewritten original entrypoint into 0x%lx. Offset between original start and new start: %x\n", jmp, abs(new_entry - g_hdr->e_entry));
 	}
 	else
@@ -92,9 +91,9 @@ Elf64_Addr find_cave(void *mem)
 			}
 			if (j == g_hdr->e_phnum)
 			{
-				add_original_entry_to_payload(start + i);
+				patch_payload(start + i);
 				ft_memcpy(mem + start + i, payload, sizeof(payload));
-				g_hdr->e_entry = start + i;
+				g_hdr->e_entry = start + i + g_baseaddr;
 				memcpy(mem, g_hdr, sizeof(*g_hdr));
 				printf(CYAN "Found cave at offset -> " DEFAULT "0x%lx" CYAN ".\n" DEFAULT, start + i);
 				return (start + i);
@@ -112,7 +111,6 @@ int main(int ac, char **av)
 	Elf64_Off cave = 0;
 	g_hdr = NULL;
 
-	printf("_start: %p\n", &_start);
 	if (ac != 2)
 		ft_error("usage: woody_woodpacker binary");
 	if (!ft_strcmp("woody", av[1]))
@@ -139,7 +137,7 @@ int main(int ac, char **av)
 	mem = NULL;
 	if (woodyfd > 0)
 	{
-		mem = mmap(NULL, g_binsize,PROT_WRITE, MAP_SHARED, woodyfd, 0);
+		mem = mmap(NULL, g_binsize,PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
 			cave = find_cave(mem);

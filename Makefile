@@ -43,12 +43,12 @@ xx: x
 h: $(NAME) test/hello.c
 	gcc -O3 test/hello.c -o test/hello
 	./$(NAME) test/hello
-	echo
+	@echo
 	./woody || true
 
 e: $(NAME)
 	./$(NAME) /bin/echo
-	echo
+	@echo
 	./woody || true
 ee: e
 	binwalk -W woody /bin/echo | less
