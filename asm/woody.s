@@ -10,7 +10,7 @@ _start:
   mov rax, 1                     ; syscall [1] -> sys_write
   mov rdi, 1                     ; stdout
   lea rsi, [rel msg]             ; msg address
-  mov rdx, msg_end - msg        ; msg size
+  mov rdx, msg_end - msg -1       ; msg size
   syscall
 
   ;; restore cpu state

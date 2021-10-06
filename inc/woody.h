@@ -1,5 +1,5 @@
-#ifndef WOODY_H
-#define WOODY_H
+#ifndef __WOODY_H__
+#define __WOODY_H__
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,11 +19,18 @@
 # define BASEIMAGE 0x1000
 #endif
 
+typedef struct s_payload
+{
+	char *data;
+	size_t len;
+}	t_payload;
+
 size_t	ft_strlen(const char *s);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_strncmp(const char *s1, const char *s2, unsigned int n);
 void *	ft_memcpy(void *dest, const void *src, size_t n);
 void	ft_puts(const char *s);
 void    ft_putnbr(long long i);
+void patch_payload(Elf64_Addr new_entry, Elf64_Addr orig_entry, t_payload *payload);
 
 #endif

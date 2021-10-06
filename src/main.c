@@ -1,7 +1,5 @@
 #include "../inc/woody.h"
-char payload[] = {
-'\x50','\x57','\x56','\x52','\xb8','\x01','\x00','\x00','\x00','\xbf','\x01','\x00','\x00','\x00','\x48','\x8d','\x35','\x1b','\x00','\x00','\x00','\xba','\x19','\x00','\x00','\x00','\x0f','\x05','\x5a','\x5e','\x5f','\x58','\x49','\xba','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x42','\x41','\xff','\xe2','\x90','\x90','\x90','\x1b','\x5b','\x39','\x34','\x6d','\x2e','\x2e','\x2e','\x2e','\x57','\x4f','\x4f','\x44','\x59','\x2e','\x2e','\x2e','\x2e','\x2e','\x1b','\x5b','\x30','\x6d','\x0a','\x00'
-};
+
 
 Elf64_Ehdr *g_hdr = 0;
 size_t g_binsize = 0;
@@ -42,38 +40,7 @@ static int duplicate_binary(char *mem, size_t size)
 	return (woodyfd);
 }
 
-void patch_payload(Elf64_Addr new_entry)
-{
-	Elf64_Addr jmp;
-	char *addr = NULL;
-	long dummy = 0x4242424242424242;
-
-	jmp = (Elf64_Addr)-(new_entry - g_hdr->e_entry - sizeof(payload));
-
-	int pfd = open("asm/payload", O_RDONLY);
-	if (pfd < 0)
-	{
-		printf("payload not found\n");
-		return;
-	}
-		
-	close(pfd);
-	(void)new_entry;
-	for (uint i = 0; i < sizeof(payload) - (sizeof(dummy) - 1) ; ++i) {
-		if (strncmp(&payload[i], (char*)&dummy, sizeof(dummy)) == 0)
-			addr = &payload[i];
-	}
-	if (addr) {
-		ft_memcpy(addr, (void *)&jmp, sizeof(jmp));
-		printf("e_entry: %p -> new e_entry %p ", (void*)g_hdr->e_entry, (void*)new_entry);
-
-		printf("jmp: %ld. Offset between original start and new start: %x\n", jmp, abs(new_entry - g_hdr->e_entry));
-	}
-	else
-		dprintf(2, RED "woody_woodpacker: error: payload not found.\n" DEFAULT);
-}
-
-Elf64_Addr find_cave(void *mem)
+Elf64_Addr find_cave(void *mem, t_payload *payload)
 {
 	Elf64_Phdr *phdr = NULL;
 	Elf64_Addr start = 0, end = 0;
@@ -92,15 +59,15 @@ Elf64_Addr find_cave(void *mem)
 		if (phdr[i].p_filesz > 0 && phdr[i].p_filesz == phdr[i].p_memsz && (phdr[i].p_flags & (PF_X)))
 		{
 			start = phdr[i].p_offset + phdr[i].p_filesz;
-			end = start + sizeof(payload);
+			end = start + payload->len;
 			for (j = 0; j < g_hdr->e_phnum; ++j) /* corruption check */ {
 				if (phdr[j].p_offset >= start && phdr[j].p_offset < end && phdr[j].p_filesz > 0)
 					break;
 			}
 			if (j == g_hdr->e_phnum)
 			{
-				patch_payload(start + i);
-				ft_memcpy(mem + start + i, payload, sizeof(payload));
+				patch_payload(start + i, g_hdr->e_entry, payload);
+				ft_memcpy(mem + start + i, payload->data, payload->len);
 				g_hdr->e_entry = start + i + g_baseaddr;
 				memcpy(mem, g_hdr, sizeof(*g_hdr));
 				printf(CYAN "Found cave at offset -> " DEFAULT "0x%lx" CYAN ".\n" DEFAULT, start + i);
@@ -111,19 +78,40 @@ Elf64_Addr find_cave(void *mem)
 	return (0);
 }
 
+t_payload *get_payload(const char *path)
+{
+	int			fd;
+	size_t		size;
+	t_payload	*pld;
 
+	fd = open(path, O_RDWR);
+	if (fd < 0)
+		return (NULL);
+	size = lseek(fd, 0, SEEK_END);
+	lseek(fd, 0, SEEK_SET);
+	if (size == 0)
+		return (NULL);
+	printf("Reading payload from %s, %lu bytes\n", path, size);
+	pld = malloc(sizeof(*pld));
+	pld->data = calloc(1, size);
+	read(fd, pld->data, size);
+	pld->len = size;
+	close(fd);
+	return (pld);
+}
 
 int main(int ac, char **av)
 {
 	int woodyfd = 0;
 	Elf64_Off cave = 0;
+	int fd;
 	g_hdr = NULL;
+	t_payload *payload;
 
 	if (ac != 2)
 		ft_error("usage: woody_woodpacker binary");
 	if (!ft_strcmp("woody", av[1]))
 		ft_error("error: this binary has already been infected!");
-	int fd;
 	size_t g_binsize;
 
 	fd = open(av[1], O_RDONLY);
@@ -149,10 +137,12 @@ int main(int ac, char **av)
 	mem = NULL;
 	if (woodyfd > 0)
 	{
+		payload = get_payload("asm/opcode");
 		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
-			cave = find_cave(mem);
+			
+			cave = find_cave(mem, payload);
 			if (cave > 0)
 			{
 				;

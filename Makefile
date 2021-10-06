@@ -1,19 +1,22 @@
 NAME=woody_woodpacker
-SRC=src/main.c src/libft.c
+SRC=src/main.c src/libft.c src/injection.c
 OBJ = $(SRC:.c=.o)
 FLAGS= -Wall -Wextra -Werror -g -Wformat-security -fsanitize=address
 INC=inc/woody.h
 ASMSRC=asm/woody.s asm/get_opcode.sh
-
+ASM=asm/opcode
 $(NAME): $(OBJ)
 	gcc $(FLAGS) $(OBJ) -o $(NAME)
 
+$(ASM): $(ASMRC)
+	./asm/get_opcode.sh
 
-%.o: %.c $(INC)
+%.o: %.c $(INC) $(ASM)
 		gcc $(FLAGS) -c -o $@ $<
 
 clean:
 		rm -f $(OBJ)
+		rm -f $(ASM)
 
 fclean: clean
 		rm -f $(NAME) woody

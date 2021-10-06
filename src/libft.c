@@ -77,7 +77,3 @@ void ft_puts(const char *s)
 	write(1, "\n", 1);
 }
 
-void ft_putnbr(long long i)
-{
-	printf("%lld", i);
-}
