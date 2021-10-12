@@ -19,9 +19,9 @@ print:
   jmp end
 woody:
   call print
-  msg     db `\e[94m....WOODY.....\e[0m\n`
-  ;; restore cpu state
+  db `\e[94m....WOODY.....\e[0m\n`
 end:
+  ;; restore cpu state
   xor rdx, rdx
   xor rsi, rsi
   xor rdi, rdi
