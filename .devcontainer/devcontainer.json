@@ -19,7 +19,8 @@
 	"extensions": [
 		"tomoki1207.pdf",
 		"qiaojie.binary-viewer",
-		"ms-vscode.cpptools"
+		"ms-vscode.cpptools",
+		"ms-vscode.hexeditor"
 	]
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

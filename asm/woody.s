@@ -12,6 +12,10 @@ _start:
   lea rsi, [rel msg]             ; msg address
   mov rdx, msg_end - msg -1       ; msg size
   syscall
+  
+align 8
+  msg     db 0x1b,'[94m....WOODY.....',0x1b,'[0m',0x0a,0
+  msg_end db 0x0
 
   ;; restore cpu state
   pop rdx
@@ -19,8 +23,4 @@ _start:
   pop rdi
   pop rax
 
-  mov r10, 0x4242424242424242
-  jmp r10
-align 8
-  msg     db 0x1b,'[94m....WOODY.....',0x1b,'[0m',0x0a,0
-  msg_end db 0x0
+  jmp -0x0000

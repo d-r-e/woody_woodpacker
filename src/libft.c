@@ -77,3 +77,7 @@ void ft_puts(const char *s)
 	write(1, "\n", 1);
 }
 
+long long ft_abs(long long val)
+{
+	return (val > 0 ? val : -val);
+}

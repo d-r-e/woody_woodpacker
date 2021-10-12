@@ -40,21 +40,35 @@ static int duplicate_binary(char *mem, size_t size)
 	return (woodyfd);
 }
 
+/**
+ * @param mem : pointer to mmapped memory of binary file
+ * @returns virtual address in memory of the first PT_LOAD segment
+ */
+Elf64_Addr get_vaddr(void *mem)
+{
+	Elf64_Phdr *phdr = NULL;
+
+	phdr = (Elf64_Phdr *)(mem + g_hdr->e_phoff);
+	for (unsigned long i = 0; i < g_hdr->e_phnum; ++i)
+	{
+		if (phdr[i].p_type == PT_LOAD)
+		{
+			return phdr[i].p_vaddr;
+			break;
+		}
+	}
+	return 0;
+}
+
 Elf64_Addr find_cave(void *mem, t_payload *payload)
 {
 	Elf64_Phdr *phdr = NULL;
 	Elf64_Addr start = 0, end = 0;
+	Elf64_Addr new_entry = 0;
 	unsigned long i = 0, j = 0;
 
 	phdr = (Elf64_Phdr *)(mem + g_hdr->e_phoff);
-	for (i = 0; i < g_hdr->e_phnum; ++i)
-	{
-		if (phdr[i].p_type == PT_LOAD)
-		{
-			g_baseaddr = phdr[i].p_vaddr;
-			break;
-		}
-	}
+	g_baseaddr = get_vaddr(mem);
 	for (i = 0; i < g_hdr->e_phnum; ++i) {
 		if (phdr[i].p_filesz > 0 && phdr[i].p_filesz == phdr[i].p_memsz && (phdr[i].p_flags & (PF_X)))
 		{
@@ -66,12 +80,13 @@ Elf64_Addr find_cave(void *mem, t_payload *payload)
 			}
 			if (j == g_hdr->e_phnum)
 			{
-				patch_payload(start + i, g_hdr->e_entry, payload);
-				ft_memcpy(mem + start + i, payload->data, payload->len);
-				g_hdr->e_entry = start + i + g_baseaddr;
-				memcpy(mem, g_hdr, sizeof(*g_hdr));
+				new_entry = phdr[i].p_vaddr + phdr[i].p_filesz;
+				patch_payload(new_entry, g_hdr->e_entry, payload);
+				ft_memcpy(mem + new_entry, payload->data, payload->len);
+				g_hdr->e_entry = new_entry;
+				ft_memcpy(mem, g_hdr, sizeof(*g_hdr));
 				printf(CYAN "Found cave at offset -> " DEFAULT "0x%lx" CYAN ".\n" DEFAULT, start + i);
-				return (start + i);
+				return (i);
 			}
 		}
 	}
