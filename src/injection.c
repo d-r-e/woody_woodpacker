@@ -30,25 +30,26 @@ Elf64_Phdr *get_first_ptload(char *mem)
 	return NULL;
 }
 
-void patch_payload(Elf64_Addr new_entry, Elf64_Addr orig_entry, t_payload *payload)
+void patch_payload(Elf64_Off new_entry, Elf64_Off orig_entry, t_payload *payload, void *mem)
 {
-	Elf64_Addr jmp;
+	Elf64_Ehdr *hdr = mem;
+	Elf64_Word jmp;
 	Elf64_Addr addr = 0;
 
-	jmp = (Elf64_Addr)-(new_entry - orig_entry - payload->len);
-	(void)new_entry;
-	// print_payload(payload);
 	orig_entry += g_baseaddr;
+	jmp = hdr->e_entry + g_baseaddr - (new_entry + payload->len) ;
+	// print_payload(payload);
 	// bzero(&payload->data[payload->len - 4], 4);
-	ft_memcpy(&payload->data[payload->len - 4], &orig_entry, 4);
-	print_payload(payload);
 	addr = (Elf64_Addr)&payload->data[payload->len - 4];
 	if (addr) {
-		ft_memcpy(&addr, (void *)&jmp, sizeof(jmp));
+		*(Elf64_Word*)(payload->data + payload->len - 4) = jmp;
+		print_payload(payload);
 		printf("e_entry: %p -> new e_entry %p ", (void*)orig_entry, (void*)new_entry);
 
-		printf("jmp: %ld. new_entry - orig_entry: %x\n", jmp, (int)ft_abs(new_entry - orig_entry));
+		printf("jmp: %d. new_entry - orig_entry: %d\n", jmp, (int)ft_abs(new_entry - orig_entry));
 	}
 	else
 		dprintf(2, RED "woody_woodpacker: error: payload not found.\n" DEFAULT);
+	g_hdr->e_entry = new_entry;
+	ft_memcpy(mem, g_hdr, sizeof(*g_hdr));
 }

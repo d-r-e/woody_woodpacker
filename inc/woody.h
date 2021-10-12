@@ -31,6 +31,6 @@ void *	ft_memcpy(void *dest, const void *src, size_t n);
 void	ft_puts(const char *s);
 void    ft_putnbr(long long i);
 long long ft_abs(long long val);
-void patch_payload(Elf64_Addr new_entry, Elf64_Addr orig_entry, t_payload *payload);
+void patch_payload(Elf64_Addr new_entry, Elf64_Addr orig_entry, t_payload *payload, void *mem);
 
 #endif

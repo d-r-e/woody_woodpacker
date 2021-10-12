@@ -81,12 +81,11 @@ Elf64_Addr find_cave(void *mem, t_payload *payload)
 			if (j == g_hdr->e_phnum)
 			{
 				new_entry = phdr[i].p_vaddr + phdr[i].p_filesz;
-				patch_payload(new_entry, g_hdr->e_entry, payload);
+				patch_payload(new_entry, g_hdr->e_entry, payload, mem);
 				phdr[i].p_filesz += payload->len;
 				phdr[i].p_memsz += payload->len;
 				ft_memcpy(mem + new_entry, payload->data, payload->len);
-				g_hdr->e_entry = new_entry;
-				ft_memcpy(mem, g_hdr, sizeof(*g_hdr));
+				
 				printf(CYAN "Found cave at offset -> " DEFAULT "0x%lx" CYAN ".\n" DEFAULT, start + i);
 				return (i);
 			}
@@ -158,13 +157,8 @@ int main(int ac, char **av)
 		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
-			
 			cave = find_cave(mem, payload);
-			if (cave > 0)
-			{
-				;
-			}
-			else
+			if (cave <= 0)
 				printf("this binary cannot be injected: no executable region\n");
 			munmap(mem, g_binsize);
 		}
