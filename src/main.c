@@ -82,6 +82,8 @@ Elf64_Addr find_cave(void *mem, t_payload *payload)
 			{
 				new_entry = phdr[i].p_vaddr + phdr[i].p_filesz;
 				patch_payload(new_entry, g_hdr->e_entry, payload);
+				phdr[i].p_filesz += payload->len;
+				phdr[i].p_memsz += payload->len;
 				ft_memcpy(mem + new_entry, payload->data, payload->len);
 				g_hdr->e_entry = new_entry;
 				ft_memcpy(mem, g_hdr, sizeof(*g_hdr));
