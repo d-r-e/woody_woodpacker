@@ -129,6 +129,20 @@ t_payload *get_payload(const char *path)
 	return (pld);
 }
 
+static int closefds(uint n, ...)
+{
+	va_list args;
+	int fd;
+	va_start(args, n);
+	for (uint i = 0; i < n; ++i)
+	{
+		fd = va_arg(args, int);
+		close(fd);
+	}
+	return(0);
+}
+
+
 int main(int ac, char **av)
 {
 	int woodyfd = 0;
@@ -175,8 +189,7 @@ int main(int ac, char **av)
 		if (!payload || payload->len == 0)
 			printf("woody_woodpacker: error: no payload");
 		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
-		if (mem != MAP_FAILED)
-		{
+		if (mem != MAP_FAILED) {
 			cave = find_cave(mem, payload);
 			if (cave <= 0)
 				printf("this binary cannot be injected: no executable region\n");
@@ -184,15 +197,15 @@ int main(int ac, char **av)
 		}
 		else
 			printf("mmap failed\n");
+		free(payload->data);
+		free(payload);
 	}
 	else if (woodyfd == -1)
 		printf("error: " RED "error opening file.\n" DEFAULT);
 	else if (woodyfd == -2)
 		printf("error: " RED "file could not be duplicated.\n" DEFAULT);
 	free(g_hdr);
-	close(fd);
-	if (woodyfd > 0)
-		close(woodyfd);
+	closefds(2, fd, woodyfd);
 	if (!cave)
 		ret = -1;
 	exit(ret);

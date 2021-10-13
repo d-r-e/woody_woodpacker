@@ -90,3 +90,23 @@ long long ft_abs(long long val)
 {
 	return (val > 0 ? val : -val);
 }
+
+/**
+ * @brief 
+ * Allocates memory for the specified amount of elemnts
+ * and sets all memory to zero.
+ * @param n elements
+ * @param size of each element
+ * @return char* 
+ */
+char *ft_calloc(uint n, uint size)
+{
+	char *ptr;
+
+	ptr = malloc(n * size);
+	for (uint i = 0; i < n; ++i)
+	{
+		ptr[i] = 0;
+	}
+	return (ptr);
+}

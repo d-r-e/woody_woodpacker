@@ -1,5 +1,5 @@
 NAME=woody_woodpacker
-SRC=src/main.c src/libft.c src/injection.c
+SRC=src/main.c src/libft.c src/injection.c src/encryption.c
 OBJ = $(SRC:.c=.o)
 FLAGS= -Wall -Wextra -Werror -g -Wformat-security
 INC=inc/woody.h
@@ -64,4 +64,4 @@ diff: $(NAME)
 	./$(NAME) $(NAME)
 	binwalk -W woody $(NAME) |less
 
-.PHONY: test re all
+.PHONY: test re all diff
