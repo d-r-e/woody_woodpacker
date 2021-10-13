@@ -151,21 +151,17 @@ int main(int ac, char **av)
 	if (g_binsize <= 0)
 		printf("woody_woodpacker: error: file error: this binary is probably stripped\n");
 	char *mem = mmap(NULL, g_binsize, PROT_READ, MAP_SHARED, fd, 0);
-	if (mem == MAP_FAILED)
-	{
+	if (mem == MAP_FAILED) {
 		printf("error: mmap failed: this file cannot be read.\n");
 		close(fd);
 		exit(-1);
 	}
-	g_hdr = is_64_elf(mem, g_binsize);
-	if (!g_hdr)
-	{
+	if (!(g_hdr = is_64_elf(mem, g_binsize))) {
 		close(fd);
 		munmap(mem, g_binsize);
 		ft_error("error: binary not compatible");
 	}
-	else
-	{
+	else {
 		woodyfd = duplicate_binary(mem, g_binsize);
 		if (woodyfd <= 0)
 			printf("woody_woodpacker: error: binary could not be copied");
@@ -174,15 +170,13 @@ int main(int ac, char **av)
 		munmap(mem, g_binsize);
 		mem = NULL;
 	}
-	if (woodyfd > 0)
-	{
+	if (woodyfd > 0) {
 		payload = get_payload("asm/opcode");
 		if (!payload || payload->len == 0)
 			printf("woody_woodpacker: error: no payload");
 		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
-
 			cave = find_cave(mem, payload);
 			if (cave <= 0)
 				printf("this binary cannot be injected: no executable region\n");
@@ -192,9 +186,9 @@ int main(int ac, char **av)
 			printf("mmap failed\n");
 	}
 	else if (woodyfd == -1)
-		printf("error: " RED "file could not be duplicated\n" DEFAULT);
+		printf("error: " RED "error opening file.\n" DEFAULT);
 	else if (woodyfd == -2)
-		printf("error: " RED "file could not be duplicated\n" DEFAULT);
+		printf("error: " RED "file could not be duplicated.\n" DEFAULT);
 	free(g_hdr);
 	close(fd);
 	if (woodyfd > 0)
