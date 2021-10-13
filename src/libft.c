@@ -69,6 +69,10 @@ void *ft_memcpy(void *dest, const void *src, size_t n)
 	return ((unsigned char*)dest);
 }
 
+/**
+ * @fn ft_puts: prints a string to the standard output followed by a new line
+ * @param s string to write (needs to be null terminated)
+ * */
 void ft_puts(const char *s)
 {
 	if (!s)
@@ -77,6 +81,11 @@ void ft_puts(const char *s)
 	write(1, "\n", 1);
 }
 
+/** 
+ * @fn ft_abs
+ * @param val number to evaluate
+ * @returns the absolute value of the input
+ * */
 long long ft_abs(long long val)
 {
 	return (val > 0 ? val : -val);

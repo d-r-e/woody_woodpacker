@@ -1,7 +1,9 @@
 #include "../inc/woody.h"
 
 extern Elf64_Addr g_baseaddr;
+extern size_t g_binsize;
 extern Elf64_Ehdr *g_hdr;
+
 void print_payload(t_payload *payload)
 {
 	uint WIDTH = 32; 
@@ -43,10 +45,10 @@ void patch_payload(Elf64_Off new_entry, Elf64_Off orig_entry, t_payload *payload
 	addr = (Elf64_Addr)&payload->data[payload->len - 4];
 	if (addr) {
 		*(Elf64_Word*)(payload->data + payload->len - 4) = jmp;
-		print_payload(payload);
-		printf("e_entry: %p -> new e_entry %p ", (void*)orig_entry, (void*)new_entry);
+		//print_payload(payload);
+		// printf("e_entry: %p -> new e_entry %p ", (void*)orig_entry, (void*)new_entry);
 
-		printf("jmp: %d. new_entry - orig_entry: %d\n", jmp, (int)ft_abs(new_entry - orig_entry));
+		// printf("jmp: %d. new_entry - orig_entry: %d\n", jmp, (int)ft_abs(new_entry - orig_entry));
 	}
 	else
 		dprintf(2, RED "woody_woodpacker: error: payload not found.\n" DEFAULT);
