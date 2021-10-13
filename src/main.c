@@ -85,7 +85,6 @@ static Elf64_Addr find_cave(void *mem, t_payload *payload)
 			}
 			if (j == g_hdr->e_phnum)
 			{
-				printf("i: %ld, j: %ld\n", i, j);
 				new_entry = phdr[i].p_vaddr + phdr[i].p_filesz;
 				if ((void*)mem + new_entry + payload->len > (void*)mem + g_binsize) {
 					continue;
@@ -93,10 +92,7 @@ static Elf64_Addr find_cave(void *mem, t_payload *payload)
 				patch_payload(new_entry, g_hdr->e_entry, payload, mem);
 				phdr[i].p_filesz += payload->len;
 				phdr[i].p_memsz += payload->len;
-				puts("antes del memcpy");
-				
 				ft_memcpy(mem + new_entry, payload->data, payload->len);
-				puts("después del memcpy");
 				printf(CYAN "Found cave at offset -> " DEFAULT "0x%lx" CYAN ".\n" DEFAULT, start + i);
 				return (i);
 			}
@@ -143,9 +139,9 @@ int main(int ac, char **av)
 	int ret = 0;
 
 	if (ac != 2)
-		ft_error("usage: woody_woodpacker binary");
-	// if (!ft_strcmp("woody", av[1]))
-	// 	ft_error("error: this binary has already been infected!");
+		ft_error("usage: woody_woodpacker <binary>");
+	if (!ft_strcmp("woody", av[1]))
+		ft_error("error: this is the target file: choose a different binary.");
 	size_t g_binsize;
 
 	fd = open(av[1], O_RDONLY);
@@ -157,7 +153,7 @@ int main(int ac, char **av)
 	char *mem = mmap(NULL, g_binsize, PROT_READ, MAP_SHARED, fd, 0);
 	if (mem == MAP_FAILED)
 	{
-		printf("first map failed\n");
+		printf("error: mmap failed: this file cannot be read.\n");
 		close(fd);
 		exit(-1);
 	}
@@ -186,6 +182,7 @@ int main(int ac, char **av)
 		mem = mmap(NULL, g_binsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, woodyfd, 0);
 		if (mem != MAP_FAILED)
 		{
+
 			cave = find_cave(mem, payload);
 			if (cave <= 0)
 				printf("this binary cannot be injected: no executable region\n");
