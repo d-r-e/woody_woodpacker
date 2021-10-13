@@ -82,9 +82,10 @@ void ft_puts(const char *s)
 }
 
 /** 
- * @fn ft_abs
+ * @brief
+ * Gets the absolute value of a number
  * @param val number to evaluate
- * @returns the absolute value of the input
+ * @return long long
  * */
 long long ft_abs(long long val)
 {
@@ -97,13 +98,15 @@ long long ft_abs(long long val)
  * and sets all memory to zero.
  * @param n elements
  * @param size of each element
- * @return char* 
+ * @return char* pointing to the allocated memory or NULL if error
  */
 char *ft_calloc(uint n, uint size)
 {
 	char *ptr;
 
 	ptr = malloc(n * size);
+	if (!ptr)
+		return (ptr);
 	for (uint i = 0; i < n; ++i)
 	{
 		ptr[i] = 0;
