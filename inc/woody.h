@@ -12,7 +12,7 @@
 # include <stdarg.h>
 # include "libft.h"
 
-# define KEYLEN 64
+# define KEYLEN 32
 
 # define RED "\033[31m"
 # define GREEN "\033[32m"

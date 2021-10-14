@@ -15,8 +15,10 @@ char *generate_key(int seed)
     for (uint i = 0; i < KEYLEN; ++i)
     {
         str[i] += 16 - i - str[i + 1];
-        while(!ft_isalnum(str[i]))
-            str[i] -= KEYLEN - (13) * i;
+        while(!ft_isnum(str[i]))
+        {
+            str[i] = (str[i]+ 1) + '0';
+        }
     }
     return (str);
 }
