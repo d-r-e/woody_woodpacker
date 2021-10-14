@@ -102,7 +102,7 @@ long long ft_abs(long long val)
  */
 char *ft_calloc(uint n, uint size)
 {
-	char *ptr;
+	char *ptr = NULL;
 
 	ptr = malloc(n * size);
 	if (!ptr)
@@ -113,7 +113,6 @@ char *ft_calloc(uint n, uint size)
 	}
 	return (ptr);
 }
-
 
 int	ft_isalnum(int c)
 {

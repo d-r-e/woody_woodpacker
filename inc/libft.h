@@ -1,5 +1,6 @@
 #ifndef LIBFT_H
 # define LIBFT_H
+
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
@@ -12,5 +13,5 @@ void		ft_puts(const char *s);
 void		ft_putnbr(long long i);
 char		*ft_calloc(uint n, uint size);
 long long	ft_abs(long long val);
-
+int         ft_isalnum(int c);
 #endif
