@@ -2,7 +2,6 @@
     "recommendations": [
         "ms-vscode.cpptools",
         "tomoki1207.pdf",
-        "ms-vscode.hexeditor",
         "austin.code-gnu-global"
     ]
 }

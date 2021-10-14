@@ -2,6 +2,7 @@
     "files.associations": {
         "elf.h": "c",
         "typeinfo": "c",
-        "woody_woodpacker.h": "c"
+        "woody_woodpacker.h": "c",
+        "types.h": "c"
     }
 }
