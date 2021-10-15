@@ -10,7 +10,7 @@ char *generate_key(int seed)
 
 
     ptr = ft_calloc(1, seed % 100 + 1);
-    sprintf(number, "%8p%8p", ptr, ptr);
+    sprintf(number, "%p%p", ptr, ptr);
     free(ptr);
     str = ft_calloc(1, KEYLEN + 1);
     sprintf(str, "%s", number);
