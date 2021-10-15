@@ -76,7 +76,6 @@ void patch_payload(Elf64_Off new_entry, Elf64_Off orig_entry, t_payload *payload
 	orig_entry += g_baseaddr;
 	jmp = hdr->e_entry + g_baseaddr - (new_entry + payload->len) ;
 	// print_payload(payload);
-	// bzero(&payload->data[payload->len - 4], 4);
 	addr = (Elf64_Addr)&payload->data[payload->len - 4];
 	if (addr) {
 		*(Elf64_Word*)(payload->data + payload->len - 4) = jmp;

@@ -15,4 +15,5 @@ char		*ft_calloc(uint n, uint size);
 long long	ft_abs(long long val);
 int         ft_isalnum(int c);
 int         ft_isnum(int c);
+
 #endif
