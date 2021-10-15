@@ -120,7 +120,7 @@ t_payload *get_payload(const char *path)
 	lseek(fd, 0, SEEK_SET);
 	if (size == 0)
 		return (NULL);
-	printf("Reading payload from %s, %lu bytes\n", path, size);
+	// printf("Reading payload from %s, %lu bytes\n", path, size);
 	pld = malloc(sizeof(*pld));
 	pld->data = calloc(1, size);
 	read(fd, pld->data, size);
@@ -154,8 +154,7 @@ int main(int ac, char **av)
 
 	if (ac != 2)
 		ft_error("usage: woody_woodpacker <binary>");
-	if (!ft_strcmp("woody", av[1]))
-		ft_error("error: this is the target file: choose a different binary.");
+	print_woody(ac, av);
 	size_t g_binsize;
 
 	fd = open(av[1], O_RDONLY);

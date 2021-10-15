@@ -11,7 +11,7 @@ Elf64_Off get_strtab(Elf64_Ehdr *hdr, char *mem)
 	return shdr[hdr->e_shstrndx].sh_offset;
 }
 
-int find_text_section(char *mem, Elf64_Off *textsection, Elf64_Word *textsize)
+int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Word *textsize)
 {
 	Elf64_Shdr	*shdr = (void*)mem + g_hdr->e_shoff;
 	const char	*name;
@@ -24,12 +24,12 @@ int find_text_section(char *mem, Elf64_Off *textsection, Elf64_Word *textsize)
 		// printf("%s\n", name);	
 		if (!ft_strcmp(".text", name))
 		{
-			*textsection = i;
+			*textoffset = shdr[i].sh_offset;
 			*textsize = shdr[i].sh_size;
 			return (i);
 		}
 	}
-	*textsection = 0;
+	*textoffset = 0;
 	*textsize = 0;
 	return (-1);
 }
@@ -67,12 +67,12 @@ void patch_payload(Elf64_Off new_entry, Elf64_Off orig_entry, t_payload *payload
 	Elf64_Ehdr *hdr = mem;
 	Elf64_Word jmp;
 	Elf64_Addr addr = 0;
-	Elf64_Off	text_sect;
+	Elf64_Off	text_offset;
 	Elf64_Word	size;
 
-	find_text_section(mem, &text_sect, &size);
-	encrypt_text_section(mem, text_sect, size);
-	printf("text_sect offset %lu text_sect size %u\n", text_sect, size);
+	find_text_section(mem, &text_offset, &size);
+	encrypt_text_section(mem, text_offset, size);
+	printf("text_offset offset %lu text_offset size %u\n", text_offset, size);
 	orig_entry += g_baseaddr;
 	jmp = hdr->e_entry + g_baseaddr - (new_entry + payload->len) ;
 	// print_payload(payload);

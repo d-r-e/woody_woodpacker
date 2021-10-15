@@ -12,7 +12,7 @@
 # include <stdarg.h>
 # include "libft.h"
 
-# define KEYLEN 32
+# define KEYLEN 8 // 8 bytes -> 64 bit key length
 
 # define RED "\033[31m"
 # define GREEN "\033[32m"
@@ -31,5 +31,6 @@ typedef struct s_payload
 
 void	patch_payload(Elf64_Addr new, Elf64_Addr orig, t_payload *p, void *m);
 int		encrypt_text_section(char *mem, int text_sect, uint size);
+void	print_woody(int argc, char **argv);
 
 #endif
