@@ -102,11 +102,11 @@ long long ft_abs(long long val)
  */
 char *ft_calloc(uint n, uint size)
 {
-	char *ptr = NULL;
+	char *ptr;
 
 	ptr = malloc(n * size);
 	if (!ptr)
-		return (ptr);
+		return (NULL);
 	for (uint i = 0; i < n; ++i)
 	{
 		ptr[i] = 0;
