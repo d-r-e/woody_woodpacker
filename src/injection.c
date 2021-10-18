@@ -40,7 +40,7 @@ static int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Off *textsi
 	uint keystart = 0;
 	for (uint i = 0; i < payload->len; ++i)
 	{
-		if(ft_strncmp(&payload->data[i], (char*)&key, sizeof(key) )== 0)
+		if (!keystart && !ft_strncmp(&payload->data[i], (char*)&key, sizeof(key)))
 			keystart = i;
 		if (keystart > 0 && keystart == i)
 			printf(RED);
