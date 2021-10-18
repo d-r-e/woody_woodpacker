@@ -16,9 +16,10 @@ unsigned char *generate_key(uint len)
         read(fd, &ptr[i], 1);
         while (ft_isprint(ptr[i]))
             read(fd, &ptr[i], 1);
-        printf("%02x ", ptr[i]);
+        // printf("%02x ", ptr[i]);
+        // if (i == len - 1)
+        //      printf("\n");
     }
-    printf("\n");
     close(fd);
     return(ptr);
 }
