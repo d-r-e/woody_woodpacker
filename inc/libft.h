@@ -15,5 +15,6 @@ char		*ft_calloc(uint n, uint size);
 long long	ft_abs(long long val);
 int         ft_isalnum(int c);
 int         ft_isnum(int c);
-
+int         ft_isprint(char c);
+char        *ft_strnstr(const char *haystack, const char *needle, size_t len);
 #endif

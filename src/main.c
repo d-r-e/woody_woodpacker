@@ -89,7 +89,7 @@ static Elf64_Addr find_cave(void *mem, t_payload *payload)
 				if ((void*)mem + new_entry + payload->len > (void*)mem + g_binsize) {
 					continue;
 				}
-				patch_payload(new_entry, g_hdr->e_entry, payload, mem);
+				patch_payload(new_entry, payload, mem);
 				phdr[i].p_filesz += payload->len;
 				phdr[i].p_memsz += payload->len;
 				ft_memcpy(mem + new_entry, payload->data, payload->len);

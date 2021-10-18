@@ -2,35 +2,38 @@
 
 extern Elf64_Ehdr g_hdr;
 
-char *generate_key(uint len)
+unsigned char *generate_key(uint len)
 {
-    char *ptr = NULL;
-    int rd;
+    unsigned char *ptr = NULL;
     int fd;
 
     fd = open("/dev/random", O_RDONLY);
     if (fd < 0)
         return (NULL);
-    ptr = (char*)malloc(sizeof(char) * (len + 1));
-    rd = read(fd, ptr, len);
+    ptr = (unsigned char*)ft_calloc(1, (len + 1));
+    for (uint i = 0; i < len; i++)
+    {
+        read(fd, &ptr[i], 1);
+        while (ft_isprint(ptr[i]))
+            read(fd, &ptr[i], 1);
+        printf("%02x ", ptr[i]);
+    }
+    printf("\n");
     close(fd);
-    if (rd < (int)len)
-        return(NULL);
     return(ptr);
-
 }
 
-int encrypt_text_section(char *mem, int text_sect, uint size)
+long long encrypt_text_section(char *mem, int text_sect, uint size)
 {
-    char *key = NULL;
+    unsigned char *key = NULL;
     unsigned long long bitkey = 0;
     Elf64_Shdr *shdr = NULL;
     char *ptr;
 
     shdr = (void*)mem + text_sect;
     key = generate_key(KEYLEN);
-    bitkey = (long long)key;
-    printf(""CYAN"key value: "RED"%*lld"DEFAULT", %lu bit key\n", (int)(sizeof(bitkey)), bitkey, sizeof(bitkey) * 8);
+    bitkey = *(long long*)key;
+    printf(""CYAN"key value: "RED"%llx"DEFAULT", %lu bit key\n", bitkey, sizeof(bitkey) * 8);
     ptr = (char*)&shdr[text_sect];
     for (uint i = 0; i < size; ++i)
     {
@@ -46,5 +49,5 @@ int encrypt_text_section(char *mem, int text_sect, uint size)
         // ptr[i] ^= size;
     }
     free(key);
-    return (0);
+    return (bitkey);
 }

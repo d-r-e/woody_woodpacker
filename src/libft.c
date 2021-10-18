@@ -106,8 +106,8 @@ char *ft_calloc(uint n, uint size)
 
 	ptr = malloc(n * size);
 	if (!ptr)
-		return (NULL);
-	for (uint i = 0; i < n; ++i)
+		return (ptr);
+	for (uint i = 0; i < (n * size); ++i)
 	{
 		ptr[i] = 0;
 	}
@@ -122,7 +122,36 @@ int	ft_isalnum(int c)
 	return (0);
 }
 
+int ft_isprint(char c)
+{
+	return (c >= 32 && c <= 126);
+}
+
 int ft_isnum(int c)
 {
 	return (c >= '0' && c <= '9');
+}
+
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
+{
+	size_t	i;
+	size_t	j;
+
+	if (*needle == '\0')
+		return ((char*)haystack);
+	i = 0;
+	while (haystack[i] != '\0' && i < len)
+	{
+		j = 0;
+		if (haystack[i] == needle[j] &&
+				(i + ft_strlen(needle)) <= len)
+		{
+			while (needle[j] == haystack[i + j] && needle[j] != '\0')
+				j++;
+			if (j == ft_strlen(needle))
+				return ((char*)&(haystack[i]));
+		}
+		i++;
+	}
+	return (NULL);
 }

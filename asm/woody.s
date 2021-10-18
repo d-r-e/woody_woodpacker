@@ -17,6 +17,10 @@ print:
 woody:
   call print
   db `\e[94m....WOODY....\e[0m\n`
+key:
+  mov r13, 0xcacacacacacacaca ; key
+  mov r12, 0xcacacacacacacaca ; text_offset
+  mov r11, 0xcacacacacacacaca ; text_size
 end:
   ;; restore cpu state
   xor rdx, rdx

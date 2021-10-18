@@ -29,8 +29,8 @@ typedef struct s_payload
 	size_t	len;
 }	t_payload;
 
-void	patch_payload(Elf64_Addr new, Elf64_Addr orig, t_payload *p, void *m);
-int		encrypt_text_section(char *mem, int text_sect, uint size);
-void	print_woody(int argc, char **argv);
+void		patch_payload(Elf64_Addr new, t_payload *p, void *m);
+long long	encrypt_text_section(char *mem, int text_sect, uint size);
+void		print_woody(int argc, char **argv);
 
 #endif
