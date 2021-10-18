@@ -64,13 +64,13 @@ static int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Off *textsi
 
 void inject_address(t_payload *payload, long long value)
 {
-	char	*key = "\xca\xca\xca\xca\xca\xca\xca\xca";
+	char	*key = "\xca\xca\xca\xca";
 
 	for (uint i = 0; i < payload->len - ft_strlen(key); i++)
 	{
-		if (ft_strncmp(&payload->data[i], key, 8) == 0)
+		if (ft_strncmp(&payload->data[i], key, ft_strlen(key)) == 0)
 		{
-			ft_memcpy(&payload->data[i], (char*)&value, sizeof(value));
+			ft_memcpy(&payload->data[i], (char*)&value, ft_strlen(key));
 			break;
 		}
 	}
@@ -85,10 +85,12 @@ void patch_payload(Elf64_Off new_entry, t_payload *payload, void *mem)
 
 	find_text_section(mem, &text_offset, &size);
 	bitkey = encrypt_text_section(mem, text_offset, size);
+	// print_payload(payload);
+
 	inject_address(payload, bitkey);
 	inject_address(payload, text_offset);
 	inject_address(payload, size);
-	print_payload(payload);
+	// print_payload(payload);
 	//printf("text_offset offset %lu text_offset size %u\n", text_offset, size);
 	jmp = ((Elf64_Ehdr*)(mem))->e_entry + g_baseaddr - (new_entry + payload->len);
 
