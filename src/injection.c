@@ -34,12 +34,19 @@ static int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Off *textsi
 	return (-1);
 }
 
- void print_payload(t_payload *payload)
+ void print_payload(t_payload *payload, long long key)
 {
 	uint WIDTH = 32; 
+	uint keystart = 0;
 	for (uint i = 0; i < payload->len; ++i)
 	{
+		if(ft_strncmp(&payload->data[i], (char*)&key, sizeof(key) )== 0)
+			keystart = i;
+		if (keystart > 0 && keystart == i)
+			printf(RED);
 		printf("%.2x ", (unsigned char)payload->data[i]);
+		if (keystart != 0 && i == keystart + sizeof(key) - 1)
+			printf(DEFAULT);
 		if (i % WIDTH == WIDTH - 1)
 			printf("\n");
 	}
@@ -65,13 +72,22 @@ static int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Off *textsi
 void inject_address(t_payload *payload, long long value)
 {
 	char	*key = "\xca\xca\xca\xca";
-
+	char	*longkey = "\xca\xca\xca\xca\xca\xca\xca\xca";
+	for (uint i = 0; i < payload->len - ft_strlen(key); i++)
+	{
+		if (ft_strncmp(&payload->data[i], longkey, ft_strlen(longkey)) == 0)
+		{
+			ft_memcpy(&payload->data[i], (char*)&value, ft_strlen(longkey));
+			printf("Key successfully injected in payload.\n");
+			return;
+		}
+	}
 	for (uint i = 0; i < payload->len - ft_strlen(key); i++)
 	{
 		if (ft_strncmp(&payload->data[i], key, ft_strlen(key)) == 0)
 		{
 			ft_memcpy(&payload->data[i], (char*)&value, ft_strlen(key));
-			break;
+			return;
 		}
 	}
 }
@@ -85,12 +101,14 @@ void patch_payload(Elf64_Off new_entry, t_payload *payload, void *mem)
 
 	find_text_section(mem, &text_offset, &size);
 	bitkey = encrypt_text_section(mem, text_offset, size);
-	// print_payload(payload);
+	print_payload(payload, bitkey);
+	inject_address(payload, bitkey);
+	print_payload(payload, bitkey);
 	inject_address(payload, new_entry);
 	inject_address(payload, text_offset);
 	inject_address(payload, size);
-	inject_address(payload, bitkey);
-	print_payload(payload);
+	// print_payload(payload);
+
 	//printf("text_offset offset %lu text_offset size %u\n", text_offset, size);
 	jmp = ((Elf64_Ehdr*)(mem))->e_entry + g_baseaddr - (new_entry + payload->len);
 
