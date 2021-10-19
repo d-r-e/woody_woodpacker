@@ -18,7 +18,9 @@ $(ASM): $(ASMRC)
 clean:
 		rm -f $(OBJ)
 		rm -f $(ASM)
-
+		rm -f asm/woody.o
+		rm -f asm/payload
+		rm -f asm/objdump
 fclean: clean
 		rm -f $(NAME) woody
 
