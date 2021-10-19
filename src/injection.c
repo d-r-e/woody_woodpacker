@@ -30,12 +30,12 @@ static int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Off *textsi
 	}
 	*textoffset = 0;
 	*textsize = 0;
+	printf("error: no text section found.\n");
 	return (-1);
 }
 
 void print_payload(t_payload *payload, const char *key)
 {
-	uint WIDTH = 32;
 	uint keystart = 0;
 	for (uint i = 0; i < payload->len; ++i)
 	{
@@ -46,7 +46,7 @@ void print_payload(t_payload *payload, const char *key)
 		printf("%.2x ", (unsigned char)payload->data[i]);
 		if (keystart != 0 && i == keystart + ft_strlen(key) - 1)
 			printf(DEFAULT);
-		if (i % WIDTH == WIDTH - 1)
+		if (i % 32 == 32 - 1)
 			printf("\n");
 	}
 	printf("\n");
@@ -88,7 +88,9 @@ void patch_payload(Elf64_Off new_entry, t_payload *payload, void *mem)
 	Elf64_Off size;
 	char *key;
 
-	find_text_section(mem, &text_offset, &size);
+	int ret = find_text_section(mem, &text_offset, &size);
+	if (ret <= 0)
+		return;
 	// printf("text_offset offset %lx text_offset size %lu\n", text_offset, size);
 	key = encrypt_text_section(mem, text_offset, size);
 	inject_key(payload, (char *)key);
