@@ -20,8 +20,13 @@ print:
   mov rdx, 23         ; msg size
   syscall
   jmp end
-woody:
-  call print
+
+key:
+	call decrypt
+	db `\xca\xca\xca\xca\xca\xca\xca\xca`, 0x0
+
+string:
+	call print
   db `\e[94m....WOODY....\e[0m\n`
 end:
   ;; restore cpu state
