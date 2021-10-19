@@ -40,7 +40,7 @@ char * encrypt_text_section(void *mem, int text_offset, uint size)
         // XOR magic with random key
         // ptr[i] ^= 0xcafebabe;
         ptr[i] ^= key[i % KEYLEN];
-        ptr[i] ^= key[i % KEYLEN];
+        // ptr[i] ^= key[i % KEYLEN];
         // ptr[i] ^= key[i % KEYLEN];
         // ptr[i] ^= key[i % KEYLEN];
         // ptr[i] ^= key[i % KEYLEN];
