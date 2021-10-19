@@ -105,7 +105,7 @@ void patch_payload(Elf64_Off new_entry, t_payload *payload, void *mem)
 	char*	key;
 
 	find_text_section(mem, &text_offset, &size);
-	printf("text_offset offset %lx text_offset size %lu\n", text_offset, size);
+	// printf("text_offset offset %lx text_offset size %lu\n", text_offset, size);
 	key = encrypt_text_section(mem, text_offset, size);
 	// print_payload(payload, bitkey);
 	inject_key(payload, (char*)key);

@@ -24,7 +24,7 @@ char *generate_key(uint len)
     return(ptr);
 }
 
-char * encrypt_text_section(void *mem, int text_offset, uint size)
+char *encrypt_text_section(void *mem, int text_offset, uint size)
 {
     char *key = NULL;
     char *ptr;
@@ -32,28 +32,10 @@ char * encrypt_text_section(void *mem, int text_offset, uint size)
     key = generate_key(KEYLEN);
     if (!key || size <= 0 || text_offset <= 0 || ft_strlen((char*)key) != KEYLEN)
         return(NULL);
-    printf("key value %lu bit key\n", ft_strlen(key) * 8);
+    printf("Injected random %lu bit key\n", ft_strlen(key) * 8);
     ptr = (char*)mem + text_offset;
     printf("key value (ascii): %s\n", key);
     for (uint i = 0; i < size; ++i)
-    {
-        // XOR magic with random key
-        // ptr[i] ^= 0xcafebabe;
         ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= 0;
-        // ptr[i] ^= key[(i + 5) % KEYLEN];
-        // ptr[i] ^= key[(i + 42) % KEYLEN];
-        // ptr[i] ^= size;
-        // if done twice, cypher is reversed.
-        // ptr[i] ^= key[i % KEYLEN];
-        // ptr[i] ^= key[(i + 5) % KEYLEN];
-        // ptr[i] ^= key[(i + 42) % KEYLEN];
-        // ptr[i] ^= size;
-    }
     return (key);
 }
