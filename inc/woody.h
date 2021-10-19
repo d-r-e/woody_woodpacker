@@ -30,7 +30,7 @@ typedef struct s_payload
 }	t_payload;
 
 void		patch_payload(Elf64_Addr new, t_payload *p, void *m);
-long long	encrypt_text_section(void *mem, int text_sect, uint size);
+char		*encrypt_text_section(void *mem, int text_sect, uint size);
 void		print_woody(int argc, char **argv);
 
 #endif
