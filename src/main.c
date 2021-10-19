@@ -86,7 +86,7 @@ static Elf64_Addr find_cave(void *mem, t_payload *payload)
 			if (j == g_hdr->e_phnum)
 			{
 				new_entry = phdr[i].p_vaddr + phdr[i].p_filesz;
-				if ((void*)mem + new_entry + payload->len > (void*)mem + g_binsize) {
+				if (mem + new_entry + payload->len > mem + g_binsize) {
 					continue;
 				}
 				patch_payload(new_entry, payload, mem);

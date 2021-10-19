@@ -21,7 +21,6 @@ static int find_text_section(char *mem, Elf64_Off *textoffset, Elf64_Off *textsi
 	for (uint i = 0; i < g_hdr->e_shnum; ++i)
 	{
 		name = (void*)mem + strtab + shdr[i].sh_name;
-		// printf("%s\n", name);	
 		if (!ft_strcmp(".text", name))
 		{
 			*textoffset = shdr[i].sh_offset;
@@ -78,7 +77,7 @@ void inject_address(t_payload *payload, long long value)
 		if (ft_strncmp(&payload->data[i], longkey, ft_strlen(longkey)) == 0)
 		{
 			ft_memcpy(&payload->data[i], (char*)&value, ft_strlen(longkey));
-			printf("Key successfully injected in payload.\n");
+			// printf("Key successfully injected in payload.\n");
 			return;
 		}
 	}
@@ -100,21 +99,19 @@ void patch_payload(Elf64_Off new_entry, t_payload *payload, void *mem)
 	long long	bitkey;
 
 	find_text_section(mem, &text_offset, &size);
+	printf("text_offset offset %lx text_offset size %lu\n", text_offset, size);
 	bitkey = encrypt_text_section(mem, text_offset, size);
-	print_payload(payload, bitkey);
+	// print_payload(payload, bitkey);
 	inject_address(payload, bitkey);
-	print_payload(payload, bitkey);
 	inject_address(payload, new_entry);
-	inject_address(payload, text_offset);
 	inject_address(payload, size);
+	inject_address(payload, text_offset);
+	print_payload(payload, bitkey);
 	// print_payload(payload);
 
-	//printf("text_offset offset %lu text_offset size %u\n", text_offset, size);
 	jmp = ((Elf64_Ehdr*)(mem))->e_entry + g_baseaddr - (new_entry + payload->len);
 
 	*(Elf64_Word*)(payload->data + payload->len - 4) = jmp;
-
-
 	g_hdr->e_entry = new_entry;
 	ft_memcpy(mem, g_hdr, sizeof(*g_hdr));
 }
