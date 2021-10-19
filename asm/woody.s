@@ -42,7 +42,7 @@ loop:
    	cmp rax, rdx 
    	jb loop 
 	jmp woody
-write:
+write:  ; (rax=0x01)(rdi, rsi, rdx) = write(fd, buff, len)
 	mov rax, 1
 	mov rdi, 1
 	pop rsi
@@ -54,7 +54,6 @@ key:
 	db `\xca\xca\xca\xca\xca\xca\xca\xca\xca\xca`, 0x0
 woody:
 	call write
-	; db `....WOODY....\n`
 	db `\e[35m....WOODY....\e[0m\n`
 end:
 	xor rax, rax

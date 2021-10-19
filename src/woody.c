@@ -57,6 +57,11 @@ $ < ?$$c     $$$$$$ MMMM     4MMMP       ;!!!'``_,,_```!!!\n \
          ,!,MMMMMM,4MMMP uMMMMMMMMMMP !!!!!!!!!!!!!!\n \
          ! JMMMMMML MP ,JMMMMMMMMMMM <!!! `!!!!!!!!!\n \
         ;! MMMMMMMM,\" uMMMMMMMMMMMM';!!!!! `!!!!!!!!>\n";
+    if (!ft_strcmp(argv[0], "./woody"))
+    {
+        printf("%s\n", woody);
+        exit(0);
+    }
     if (argc == 2 && !ft_strcmp(argv[1], "woody"))
     {
         printf("%s\n", woody);
