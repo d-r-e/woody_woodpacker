@@ -92,10 +92,10 @@ void patch_payload(Elf64_Off new_entry, t_payload *payload, void *mem)
 	// printf("text_offset offset %lx text_offset size %lu\n", text_offset, size);
 	key = encrypt_text_section(mem, text_offset, size);
 	inject_key(payload, (char *)key);
-	inject_address(payload, new_entry);
-	inject_address(payload, size);
 	inject_address(payload, text_offset);
-	print_payload(payload, (char *)key);
+	inject_address(payload, size);
+	inject_address(payload, new_entry);
+	// print_payload(payload, (char *)key);
 
 	jmp = ((Elf64_Ehdr *)(mem))->e_entry + g_baseaddr - (new_entry + payload->len);
 	*(Elf64_Word *)(payload->data + payload->len - 4) = jmp;
