@@ -34,7 +34,7 @@ decryptor:
 loop:
    	inc rax
    	mov r8, [r14 + rcx]
-   	xor byte [rsi + rax], r8b ; decryption
+   	xor byte [rsi + rax], r8b ; decryption (r8b for XOR)
    	inc rcx
    	cmp byte [r14 + rcx], 0 ; while key[i]
    	cmove rcx, r11 ; key back to stsart
@@ -48,12 +48,12 @@ write:  ; (rax=0x01)(rdi, rsi, rdx) = write(fd, buff, len)
 	mov rdx, 23
 	syscall
 	jmp end
-key:
-	call decryptor
-	db `\xca\xca\xca\xca\xca\xca\xca\xca\xca\xca`, 0x0 ;temporary key string
 woody:
 	call write
 	db `\e[35m....WOODY....\e[0m\n`
+key:
+	call decryptor
+	db `\xca\xca\xca\xca\xca\xca\xca\xca\xca\xca`, 0x0 ;temporary key string 
 end:
 	xor rax, rax
 	xor rdi, rdi
