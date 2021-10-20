@@ -42,7 +42,7 @@ test: re x h fclean
 x: $(NAME)
 	./woody_woodpacker woody_woodpacker
 	ls -la woody
-	./woody || true
+	./woody /bin/bash || true
 xx: x
 	binwalk -W woody $(NAME) | less
 
