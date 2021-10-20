@@ -121,7 +121,7 @@ t_payload *get_payload(const char *path)
 		return (NULL);
 	// printf("Reading payload from %s, %lu bytes\n", path, size);
 	pld = malloc(sizeof(*pld));
-	pld->data = calloc(1, size);
+	pld->data = ft_calloc(1, size);
 	read(fd, pld->data, size);
 	pld->len = size;
 	close(fd);
