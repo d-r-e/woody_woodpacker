@@ -3,8 +3,8 @@
 
 - [X] Generate assembly payload
 - [X] Inject payload in the binary
-- [ ] Generate decryptor in the payload
-- [ ] Encrypt the .text section
+- [X] Generate decryptor in the payload
+- [X] Encrypt the .text section
 
 ![](https://upload.wikimedia.org/wikipedia/commons/e/e4/ELF_Executable_and_Linkable_Format_diagram_by_Ange_Albertini.png)
 
