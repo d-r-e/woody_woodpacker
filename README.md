@@ -1,10 +1,10 @@
 # woody_woodpacker
 “Packers” are tools that consist on compressing executable programs (.exe, .dll, .ocx ...) and encrypt them simultaneously. During execution, a program passing through a packer is loaded in memory, compressed and encrypted, then it will be decompressed (decrypted as well) and finally be executed. The creation of this kind of program is linked to the fact that antivirus programs generally analyse programs when they are loaded in memory, before they are executed. Thus, encryption and compression of a packer allow to bypass this behavior by obfuscating the content of an executable until it execution.
 
-- [X] Generate assembly payload
-- [X] Inject payload in the binary
-- [X] Generate decryptor in the payload
-- [X] Encrypt the .text section
+## ELF Packer: Obfuscation
+
+Woody_woodpacker encrypts an ELF binary passed as parameter and injects a decriptor on the executable, so its execution remains intact in memory.
+It injects the code finding an empty "code cave" in any PT_LOAD segment.
 
 ![](https://upload.wikimedia.org/wikipedia/commons/e/e4/ELF_Executable_and_Linkable_Format_diagram_by_Ange_Albertini.png)
 
